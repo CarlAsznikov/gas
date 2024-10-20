@@ -101,8 +101,8 @@
                 body: JSON.stringify({ reading: meterReading }),
             })
             .then(response => response.text())
-            .then(data => {
-                alert(data);
+            .then(() => {
+                // Kein Pop-up, einfach die Seite neu laden
                 window.location.reload();
             })
             .catch(error => console.error('Fehler:', error));
