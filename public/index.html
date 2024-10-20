@@ -13,7 +13,7 @@
         <button type="submit">Speichern</button>
     </form>
 
-    <!-- Canvas-Element für das Diagramm -->
+    <!-- Canvas-Element für das Balkendiagramm -->
     <h2>Zählerstand-Verlauf</h2>
     <canvas id="gasChart" width="400" height="200"></canvas>
 
@@ -40,7 +40,7 @@
             .catch(error => console.error('Fehler:', error));
         });
 
-        // Funktion zum Laden der Daten und Anzeigen im Diagramm
+        // Funktion zum Laden der Daten und Anzeigen im Balkendiagramm
         function loadDataAndDisplayChart() {
             fetch('/get-readings')
                 .then(response => response.json())
@@ -50,26 +50,32 @@
 
                     const ctx = document.getElementById('gasChart').getContext('2d');
                     new Chart(ctx, {
-                        type: 'line',
+                        type: 'bar', // Balkendiagramm
                         data: {
                             labels: timestamps,
                             datasets: [{
                                 label: 'Gaszählerstände',
                                 data: readings,
-                                borderWidth: 1,
-                                fill: false
+                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1
                             }]
                         },
                         options: {
                             scales: {
                                 x: {
                                     type: 'category',
-                                    time: {
-                                        unit: 'day'
+                                    title: {
+                                        display: true,
+                                        text: 'Zeitpunkt'
                                     }
                                 },
                                 y: {
-                                    beginAtZero: true
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Zählerstand'
+                                    }
                                 }
                             }
                         }
@@ -78,9 +84,8 @@
                 .catch(error => console.error('Fehler beim Laden der Daten:', error));
         }
 
-        // Daten laden und Diagramm anzeigen, wenn die Seite geladen wird
+        // Daten laden und Balkendiagramm anzeigen, wenn die Seite geladen wird
         window.onload = loadDataAndDisplayChart;
     </script>
 </body>
 </html>
-
