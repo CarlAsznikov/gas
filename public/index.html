@@ -5,27 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gas-Zählerstand Eingabe</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        /* Grundlegende Styles für das Layout */
+        body, html {
             margin: 0;
             padding: 0;
+            font-family: Arial, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
+            height: 100vh;
             background-color: #f0f0f0;
-            padding: 20px;
+            overflow: hidden; /* Verhindert unnötiges Scrollen */
         }
 
         h1 {
             color: #333;
+            margin-bottom: 10px;
         }
 
         form {
             margin-bottom: 20px;
             width: 100%;
-            max-width: 500px;
+            max-width: 400px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -40,12 +42,12 @@
             padding: 10px;
             font-size: 16px;
             width: 100%;
-            max-width: 300px;
             margin-bottom: 10px;
+            box-sizing: border-box;
         }
 
         button {
-            padding: 10px 20px;
+            padding: 10px;
             font-size: 16px;
             cursor: pointer;
             background-color: #007BFF;
@@ -53,16 +55,21 @@
             border: none;
             border-radius: 5px;
             width: 100%;
-            max-width: 300px;
+            box-sizing: border-box;
         }
 
         canvas {
             width: 100%;
-            max-width: 600px;
-            height: 300px; /* Feste Höhe für bessere Leistung */
+            max-width: 400px;
+            height: 200px; /* Feste Höhe, um Platz zu sparen */
             background-color: white;
             border-radius: 8px;
-            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .chart-container {
+            width: 100%;
+            max-width: 400px;
         }
     </style>
 </head>
@@ -74,8 +81,10 @@
         <button type="submit">Speichern</button>
     </form>
 
-    <h2>Zählerstand-Verlauf</h2>
-    <canvas id="gasChart"></canvas>
+    <div class="chart-container">
+        <h2>Zählerstand-Verlauf</h2>
+        <canvas id="gasChart"></canvas>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
@@ -102,7 +111,7 @@
             fetch('/get-readings')
                 .then(response => response.json())
                 .then(data => {
-                    const lastEntries = data.slice(-10); // Nur die letzten 10 Einträge
+                    const lastEntries = data.slice(-10);
                     const timestamps = lastEntries.map(entry => new Date(entry.timestamp).toLocaleString());
                     const readings = lastEntries.map(entry => entry.reading);
 
@@ -139,7 +148,7 @@
                                 }
                             },
                             animation: {
-                                duration: 0 // Keine Animationen
+                                duration: 0
                             }
                         }
                     });
