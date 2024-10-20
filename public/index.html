@@ -34,8 +34,8 @@
             .then(response => response.text())
             .then(data => {
                 alert(data);
-                // Daten nach dem Speichern neu laden und das Diagramm aktualisieren
-                loadDataAndDisplayChart();
+                // Seite nach erfolgreichem Speichern neu laden
+                window.location.reload();
             })
             .catch(error => console.error('Fehler:', error));
         });
