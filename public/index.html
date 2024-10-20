@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gas-Zählerstand Eingabe</title>
     <style>
-        /* Grundlegende Styles für das Layout */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -60,7 +59,7 @@
         canvas {
             width: 100%;
             max-width: 600px;
-            height: auto;
+            height: 300px; /* Feste Höhe für bessere Leistung */
             background-color: white;
             border-radius: 8px;
             padding: 10px;
@@ -75,13 +74,11 @@
         <button type="submit">Speichern</button>
     </form>
 
-    <!-- Canvas-Element für das Balkendiagramm -->
     <h2>Zählerstand-Verlauf</h2>
     <canvas id="gasChart"></canvas>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Event Listener für das Formular
         document.getElementById('gasForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const meterReading = document.getElementById('meterReading').value;
@@ -96,23 +93,22 @@
             .then(response => response.text())
             .then(data => {
                 alert(data);
-                // Seite nach erfolgreichem Speichern neu laden
                 window.location.reload();
             })
             .catch(error => console.error('Fehler:', error));
         });
 
-        // Funktion zum Laden der Daten und Anzeigen im Balkendiagramm
         function loadDataAndDisplayChart() {
             fetch('/get-readings')
                 .then(response => response.json())
                 .then(data => {
-                    const timestamps = data.map(entry => new Date(entry.timestamp).toLocaleString());
-                    const readings = data.map(entry => entry.reading);
+                    const lastEntries = data.slice(-10); // Nur die letzten 10 Einträge
+                    const timestamps = lastEntries.map(entry => new Date(entry.timestamp).toLocaleString());
+                    const readings = lastEntries.map(entry => entry.reading);
 
                     const ctx = document.getElementById('gasChart').getContext('2d');
                     new Chart(ctx, {
-                        type: 'bar', // Balkendiagramm
+                        type: 'bar',
                         data: {
                             labels: timestamps,
                             datasets: [{
@@ -141,6 +137,9 @@
                                         text: 'Zählerstand'
                                     }
                                 }
+                            },
+                            animation: {
+                                duration: 0 // Keine Animationen
                             }
                         }
                     });
@@ -148,7 +147,6 @@
                 .catch(error => console.error('Fehler beim Laden der Daten:', error));
         }
 
-        // Daten laden und Balkendiagramm anzeigen, wenn die Seite geladen wird
         window.onload = loadDataAndDisplayChart;
     </script>
 </body>
