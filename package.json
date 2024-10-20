@@ -1,0 +1,17 @@
+{
+  "name": "gas-meter-app",
+  "version": "1.0.0",
+  "description": "Gas meter app to track and display meter readings",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "body-parser": "^1.19.2"
+  },
+  "engines": {
+    "node": "16.x"
+  },
+  "license": "MIT"
+}
