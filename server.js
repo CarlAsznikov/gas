@@ -7,8 +7,9 @@ const PORT = process.env.PORT || 3000;
 
 // Verbindung zu MongoDB herstellen
 const mongoURI = 'mongodb+srv://carlasznikov:NZMOf3HdwMZM2Xjh@cluster0.pozoi.mongodb.net/gasMeterDB?retryWrites=true&w=majority&appName=Cluster0';
+
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => console.log('MongoDB verbunden'))
+    .then(() => console.log('MongoDB erfolgreich verbunden'))
     .catch(error => console.error('Fehler beim Verbinden mit MongoDB:', error));
 
 // Schema und Modell für Zählerstände definieren
@@ -23,24 +24,28 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // API-Endpunkt zum Speichern des Zählerstandes
-app.post('/save-meter-reading', (req, res) => {
-    const newReading = new MeterReading({
-        reading: req.body.reading
-    });
-
-    newReading.save()
-        .then(() => res.send('Daten erfolgreich gespeichert'))
-        .catch(error => res.status(500).send('Fehler beim Speichern der Daten: ' + error));
+app.post('/save-meter-reading', async (req, res) => {
+    try {
+        const newReading = new MeterReading({
+            reading: req.body.reading
+        });
+        await newReading.save();
+        res.send('Daten erfolgreich gespeichert');
+    } catch (error) {
+        console.error('Fehler beim Speichern der Daten:', error);
+        res.status(500).send('Fehler beim Speichern der Daten: ' + error.message);
+    }
 });
 
 // API-Endpunkt zum Abrufen aller Zählerstände
-app.get('/get-readings', (req, res) => {
-    MeterReading.find()
-        .sort({ timestamp: 1 })
-        .then(readings => res.json(readings))
-        .catch(error => {
-            console.error('Fehler beim Laden der Daten:', error);
-            res.status(500).send('Fehler beim Laden der Daten: ' + error);
+app.get('/get-readings', async (req, res) => {
+    try {
+        const readings = await MeterReading.find().sort({ timestamp: 1 });
+        res.json(readings);
+    } catch (error) {
+        console.error('Fehler beim Laden der Daten:', error);
+        res.status(500).send('Fehler beim Laden der Daten: ' + error.message);
+    }
 });
 
 // Startseite anzeigen (optional, falls du eine index.html hast)
