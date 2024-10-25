@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -19,7 +20,7 @@ const meterReadingSchema = new mongoose.Schema({
 const MeterReading = mongoose.model('MeterReading', meterReadingSchema);
 
 app.use(bodyParser.json());
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // API-Endpunkt zum Speichern des Zählerstandes
 app.post('/save-meter-reading', (req, res) => {
@@ -40,6 +41,12 @@ app.get('/get-readings', (req, res) => {
         .catch(error => res.status(500).send('Fehler beim Laden der Daten: ' + error));
 });
 
+// Startseite anzeigen (optional, falls du eine index.html hast)
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Server starten
 app.listen(PORT, () => {
     console.log(`Server läuft auf http://localhost:${PORT}`);
 });
