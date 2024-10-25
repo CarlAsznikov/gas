@@ -27,10 +27,11 @@
         form {
             margin-bottom: 20px;
             width: 100%;
-            max-width: 400px;
+            max-width: 600px;
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             align-items: center;
+            gap: 10px;
         }
 
         label {
@@ -38,10 +39,11 @@
             margin-bottom: 10px;
         }
 
-        input[type="number"] {
+        input[type="number"],
+        input[type="datetime-local"] {
             padding: 10px;
             font-size: 16px;
-            width: 100%;
+            width: 150px;
             margin-bottom: 10px;
             box-sizing: border-box;
         }
@@ -54,7 +56,7 @@
             color: white;
             border: none;
             border-radius: 5px;
-            width: 100%;
+            width: 100px;
             box-sizing: border-box;
         }
 
@@ -88,6 +90,8 @@
     <form id="gasForm">
         <label for="meterReading">Zählerstand:</label>
         <input type="number" id="meterReading" name="meterReading" step="0.001" min="0" required>
+        <label for="timestamp">Datum & Uhrzeit:</label>
+        <input type="datetime-local" id="timestamp" name="timestamp">
         <button type="submit">Speichern</button>
     </form>
 
@@ -111,13 +115,17 @@
         document.getElementById('gasForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const meterReading = parseFloat(document.getElementById('meterReading').value).toFixed(3);
+            const timestampInput = document.getElementById('timestamp').value;
+
+            // Falls kein Datum eingegeben wird, wird das aktuelle Datum verwendet
+            const timestamp = timestampInput ? new Date(timestampInput) : new Date();
 
             fetch('/save-meter-reading', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ reading: meterReading }),
+                body: JSON.stringify({ reading: meterReading, timestamp: timestamp.toISOString() }),
             })
             .then(response => response.text())
             .then(() => {
@@ -126,6 +134,28 @@
             })
             .catch(error => console.error('Fehler:', error));
         });
+
+        function calculateForecast(timestamp) {
+            const startValue = 2790.000;
+            const dailyRates = [6.209, 5.585, 4.657, 3.208, 1.552, 0.802, 0.776, 0.776, 2.005, 3.104, 4.812, 6.209];
+            const date = new Date(timestamp);
+            const month = date.getMonth(); // 0 = Januar, 11 = Dezember
+            const dayOfMonth = date.getDate();
+            const hours = date.getHours();
+
+            // Tageswert für den aktuellen Monat
+            const dailyRate = dailyRates[month];
+
+            // Gesamter Tagessollwert bis einschließlich des Vortags
+            const daysElapsed = dayOfMonth - 1;
+            const totalDailyValue = daysElapsed * dailyRate;
+
+            // Zusätzlicher Wert basierend auf der aktuellen Stunde
+            const hourlyValue = (hours / 24) * dailyRate;
+
+            // Endgültiger Sollwert
+            return (startValue + totalDailyValue + hourlyValue).toFixed(3);
+        }
 
         function loadDataAndDisplayTable() {
             fetch('/get-readings')
@@ -145,12 +175,12 @@
                         const date = new Date(entry.timestamp);
                         const formattedDate = `${String(date.getDate()).padStart(2, '0')}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getFullYear()).slice(-2)}, ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
 
-                        // Soll-Wert immer auf 7.000 setzen
-                        const forecastValue = 7.000;
+                        // Soll-Wert berechnen
+                        const forecastValue = calculateForecast(entry.timestamp);
 
                         dateCell.textContent = formattedDate;
                         readingCell.textContent = parseFloat(entry.reading).toFixed(3);
-                        forecastCell.textContent = forecastValue.toFixed(3);
+                        forecastCell.textContent = forecastValue;
 
                         row.appendChild(dateCell);
                         row.appendChild(readingCell);
