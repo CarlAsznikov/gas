@@ -38,7 +38,9 @@ app.get('/get-readings', (req, res) => {
     MeterReading.find()
         .sort({ timestamp: 1 })
         .then(readings => res.json(readings))
-        .catch(error => res.status(500).send('Fehler beim Laden der Daten: ' + error));
+        .catch(error => {
+            console.error('Fehler beim Laden der Daten:', error);
+            res.status(500).send('Fehler beim Laden der Daten: ' + error);
 });
 
 // Startseite anzeigen (optional, falls du eine index.html hast)
