@@ -135,8 +135,8 @@
 
             let timestamp;
             if (timestampInput) {
+                // Erstelle das Datum basierend auf dem datetime-local Eingabewert
                 timestamp = new Date(timestampInput);
-                timestamp.setMinutes(timestamp.getMinutes() - timestamp.getTimezoneOffset());
             } else {
                 timestamp = new Date();
             }
