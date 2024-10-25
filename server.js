@@ -55,6 +55,18 @@ app.get('/get-readings', async (req, res) => {
     }
 });
 
+// Endpunkt zum Löschen eines Zählerstands anhand der ID
+app.delete('/delete-reading/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        await MeterReading.findByIdAndDelete(id);
+        res.send('Eintrag gelöscht');
+    } catch (error) {
+        console.error('Fehler beim Löschen des Eintrags:', error);
+        res.status(500).send('Fehler beim Löschen des Eintrags');
+    }
+});
+
 // Startseite anzeigen (optional, falls du eine index.html hast)
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
