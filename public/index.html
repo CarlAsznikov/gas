@@ -142,11 +142,8 @@
             const meterReading = parseFloat(document.getElementById('meterReading').value).toFixed(3);
             const timestampInput = document.getElementById('timestamp').value;
 
-            const [date, time] = timestampInput.split("T");
-            const [year, month, day] = date.split("-");
-            const [hours, minutes] = time.split(":");
-            // Setze die CET-Zeit in UTC um (CET ist UTC+1)
-            const timestamp = new Date(Date.UTC(year, month - 1, day, hours - 1, minutes));
+            // Überprüfe, ob ein Wert im Datumsfeld eingegeben wurde und konvertiere diesen zu einem UTC-Datum
+            const timestamp = new Date(timestampInput);
 
             fetch('/save-meter-reading', {
                 method: 'POST',
