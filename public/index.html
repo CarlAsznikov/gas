@@ -83,6 +83,15 @@
             background-color: #007BFF;
             color: white;
         }
+
+        .delete-button {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
     </style>
 </head>
 <body>
@@ -103,6 +112,7 @@
                     <th>Datum</th>
                     <th>Ist-Wert</th>
                     <th>Soll-Wert</th>
+                    <th>Aktionen</th>
                 </tr>
             </thead>
             <tbody>
@@ -118,7 +128,13 @@
             const timestampInput = document.getElementById('timestamp').value;
 
             // Wenn ein Datum und eine Uhrzeit angegeben wurden, verwende diese, ansonsten das aktuelle Datum
-            const timestamp = timestampInput ? new Date(timestampInput) : new Date();
+            let timestamp;
+            if (timestampInput) {
+                timestamp = new Date(timestampInput);
+                timestamp.setMinutes(timestamp.getMinutes() - timestamp.getTimezoneOffset());
+            } else {
+                timestamp = new Date();
+            }
 
             fetch('/save-meter-reading', {
                 method: 'POST',
@@ -129,7 +145,6 @@
             })
             .then(response => response.text())
             .then(() => {
-                // Kein Pop-up, einfach die Seite neu laden
                 window.location.reload();
             })
             .catch(error => console.error('Fehler:', error));
@@ -170,6 +185,8 @@
                         const dateCell = document.createElement('td');
                         const readingCell = document.createElement('td');
                         const forecastCell = document.createElement('td');
+                        const actionCell = document.createElement('td');
+                        const deleteButton = document.createElement('button');
 
                         // Datum formatieren
                         const date = new Date(entry.timestamp);
@@ -182,13 +199,31 @@
                         readingCell.textContent = parseFloat(entry.reading).toFixed(3);
                         forecastCell.textContent = forecastValue;
 
+                        // Delete button
+                        deleteButton.textContent = 'Löschen';
+                        deleteButton.className = 'delete-button';
+                        deleteButton.onclick = () => deleteEntry(entry._id);
+                        actionCell.appendChild(deleteButton);
+
                         row.appendChild(dateCell);
                         row.appendChild(readingCell);
                         row.appendChild(forecastCell);
+                        row.appendChild(actionCell);
                         tableBody.appendChild(row);
                     });
                 })
                 .catch(error => console.error('Fehler beim Laden der Daten:', error));
+        }
+
+        function deleteEntry(id) {
+            fetch(`/delete-reading/${id}`, {
+                method: 'DELETE',
+            })
+            .then(response => response.text())
+            .then(() => {
+                window.location.reload();
+            })
+            .catch(error => console.error('Fehler beim Löschen der Daten:', error));
         }
 
         window.onload = loadDataAndDisplayTable;
