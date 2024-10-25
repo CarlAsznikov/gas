@@ -78,7 +78,7 @@
     <h1>Gas-Zählerstand Eingabe</h1>
     <form id="gasForm">
         <label for="meterReading">Zählerstand:</label>
-        <input type="number" id="meterReading" name="meterReading" required>
+        <input type="number" id="meterReading" name="meterReading" step="0.001" min="0" required>
         <button type="submit">Speichern</button>
     </form>
 
@@ -91,7 +91,7 @@
     <script>
         document.getElementById('gasForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            const meterReading = document.getElementById('meterReading').value;
+            const meterReading = parseFloat(document.getElementById('meterReading').value).toFixed(3);
 
             fetch('/save-meter-reading', {
                 method: 'POST',
@@ -126,8 +126,8 @@
                     }
 
                     const timestamps = lastEntries.map(entry => formatDate(entry.timestamp));
-                    const readings = lastEntries.map(entry => entry.reading);
-                    const forecastValues = lastEntries.map(() => 7); // Soll-Werte auf 7 setzen
+                    const readings = lastEntries.map(entry => parseFloat(entry.reading).toFixed(3));
+                    const forecastValues = lastEntries.map(() => 7.000); // Soll-Werte auf 7.000 setzen
 
                     const ctx = document.getElementById('gasChart').getContext('2d');
                     new Chart(ctx, {
