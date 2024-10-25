@@ -127,7 +127,6 @@
             const meterReading = parseFloat(document.getElementById('meterReading').value).toFixed(3);
             const timestampInput = document.getElementById('timestamp').value;
 
-            // Wenn ein Datum und eine Uhrzeit angegeben wurden, verwende diese, ansonsten das aktuelle Datum
             let timestamp;
             if (timestampInput) {
                 timestamp = new Date(timestampInput);
@@ -154,21 +153,15 @@
             const startValue = 2790.000;
             const dailyRates = [6.209, 5.585, 4.657, 3.208, 1.552, 0.802, 0.776, 0.776, 2.005, 3.104, 4.812, 6.209];
             const date = new Date(timestamp);
-            const month = date.getMonth(); // 0 = Januar, 11 = Dezember
+            const month = date.getMonth();
             const dayOfMonth = date.getDate();
             const hours = date.getHours();
 
-            // Tageswert für den aktuellen Monat
             const dailyRate = dailyRates[month];
-
-            // Gesamter Tagessollwert bis einschließlich des Vortags
             const daysElapsed = dayOfMonth - 1;
             const totalDailyValue = daysElapsed * dailyRate;
-
-            // Zusätzlicher Wert basierend auf der aktuellen Stunde
             const hourlyValue = (hours / 24) * dailyRate;
 
-            // Endgültiger Sollwert
             return (startValue + totalDailyValue + hourlyValue).toFixed(3);
         }
 
@@ -178,7 +171,7 @@
                 .then(data => {
                     const lastEntries = data.slice(-10);
                     const tableBody = document.querySelector('#readingsTable tbody');
-                    tableBody.innerHTML = ''; // Löscht vorherige Einträge
+                    tableBody.innerHTML = '';
 
                     lastEntries.forEach(entry => {
                         const row = document.createElement('tr');
@@ -188,18 +181,15 @@
                         const actionCell = document.createElement('td');
                         const deleteButton = document.createElement('button');
 
-                        // Datum formatieren
                         const date = new Date(entry.timestamp);
                         const formattedDate = `${String(date.getDate()).padStart(2, '0')}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getFullYear()).slice(-2)}, ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
 
-                        // Soll-Wert berechnen
                         const forecastValue = calculateForecast(entry.timestamp);
 
                         dateCell.textContent = formattedDate;
                         readingCell.textContent = parseFloat(entry.reading).toFixed(3);
                         forecastCell.textContent = forecastValue;
 
-                        // Delete button
                         deleteButton.textContent = 'Löschen';
                         deleteButton.className = 'delete-button';
                         deleteButton.onclick = () => deleteEntry(entry._id);
