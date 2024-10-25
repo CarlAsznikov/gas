@@ -117,7 +117,7 @@
             const meterReading = parseFloat(document.getElementById('meterReading').value).toFixed(3);
             const timestampInput = document.getElementById('timestamp').value;
 
-            // Falls kein Datum eingegeben wird, wird das aktuelle Datum verwendet
+            // Wenn ein Datum und eine Uhrzeit angegeben wurden, verwende diese, ansonsten das aktuelle Datum
             const timestamp = timestampInput ? new Date(timestampInput) : new Date();
 
             fetch('/save-meter-reading', {
