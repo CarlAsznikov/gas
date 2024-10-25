@@ -85,12 +85,18 @@
         }
 
         .delete-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
             background-color: red;
             color: white;
             border: none;
-            padding: 5px 10px;
             cursor: pointer;
-            border-radius: 3px;
+            font-size: 14px;
+            line-height: 0;
         }
     </style>
 </head>
@@ -190,7 +196,7 @@
                         readingCell.textContent = parseFloat(entry.reading).toFixed(3);
                         forecastCell.textContent = forecastValue;
 
-                        deleteButton.textContent = 'Löschen';
+                        deleteButton.textContent = '✕';
                         deleteButton.className = 'delete-button';
                         deleteButton.onclick = () => deleteEntry(entry._id);
                         actionCell.appendChild(deleteButton);
