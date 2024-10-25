@@ -135,8 +135,11 @@
 
             let timestamp;
             if (timestampInput) {
-                // Parse den Wert des datetime-local Inputs korrekt, um Zeitzonenprobleme zu vermeiden
-                timestamp = new Date(`${timestampInput}:00.000Z`);
+                // Parse the timestamp as a string and create a new Date object
+                const [date, time] = timestampInput.split("T");
+                const [year, month, day] = date.split("-");
+                const [hours, minutes] = time.split(":");
+                timestamp = new Date(Date.UTC(year, month - 1, day, hours, minutes));
             } else {
                 timestamp = new Date();
             }
