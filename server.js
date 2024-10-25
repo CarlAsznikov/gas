@@ -6,7 +6,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Verbindung zu MongoDB herstellen
-const mongoURI = 'mongodb+srv://carlasznikov:NZMOf3HdwMZM2Xjh@cluster0.pozoi.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0;
+const mongoURI = 'mongodb+srv://carlasznikov:NZMOf3HdwMZM2Xjh@cluster0.pozoi.mongodb.net/gasMeterDB?retryWrites=true&w=majority&appName=Cluster0;
     
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('MongoDB erfolgreich verbunden'))
