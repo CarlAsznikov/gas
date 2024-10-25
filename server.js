@@ -1,54 +1,45 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const fs = require('fs');
-const path = require('path');
+const mongoose = require('mongoose');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware für JSON-Verarbeitung
-app.use(bodyParser.json());
+// Verbindung zu MongoDB herstellen
+const mongoURI = 'mongodb+srv://carlasznikov:NZMOf3HdwMZM2Xjh@cluster0.pozoi.mongodb.net/gasMeterDB?retryWrites=true&w=majority&appName=Cluster0';
+mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => console.log('MongoDB verbunden'))
+    .catch(error => console.error('Fehler beim Verbinden mit MongoDB:', error));
 
-// Statische Dateien bereitstellen
+// Schema und Modell für Zählerstände definieren
+const meterReadingSchema = new mongoose.Schema({
+    reading: Number,
+    timestamp: { type: Date, default: Date.now }
+});
+
+const MeterReading = mongoose.model('MeterReading', meterReadingSchema);
+
+app.use(bodyParser.json());
 app.use(express.static('public'));
 
 // API-Endpunkt zum Speichern des Zählerstandes
 app.post('/save-meter-reading', (req, res) => {
-    const data = {
-        reading: req.body.reading,
-        timestamp: new Date().toISOString()
-    };
-
-    // Zählerstände aus der Datei laden oder leere Liste erstellen
-    fs.readFile('readings.json', (err, fileData) => {
-        const readings = err ? [] : JSON.parse(fileData);
-        readings.push(data);
-
-        // Zählerstände in der Datei speichern
-        fs.writeFile('readings.json', JSON.stringify(readings, null, 2), (err) => {
-            if (err) {
-                return res.status(500).send('Fehler beim Speichern der Daten');
-            }
-            res.send('Daten erfolgreich gespeichert');
-        });
+    const newReading = new MeterReading({
+        reading: req.body.reading
     });
+
+    newReading.save()
+        .then(() => res.send('Daten erfolgreich gespeichert'))
+        .catch(error => res.status(500).send('Fehler beim Speichern der Daten: ' + error));
 });
 
 // API-Endpunkt zum Abrufen aller Zählerstände
 app.get('/get-readings', (req, res) => {
-    fs.readFile('readings.json', (err, fileData) => {
-        if (err) {
-            return res.status(500).send('Fehler beim Laden der Daten');
-        }
-        res.json(JSON.parse(fileData));
-    });
+    MeterReading.find()
+        .sort({ timestamp: 1 })
+        .then(readings => res.json(readings))
+        .catch(error => res.status(500).send('Fehler beim Laden der Daten: ' + error));
 });
 
-// Route für die Startseite
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-// Server starten
 app.listen(PORT, () => {
     console.log(`Server läuft auf http://localhost:${PORT}`);
 });
