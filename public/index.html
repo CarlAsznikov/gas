@@ -135,13 +135,16 @@
 
             let timestamp;
             if (timestampInput) {
-                // Parse the timestamp as a string and create a new Date object
+                // Parse den Wert des datetime-local Inputs und setze die Zeitzone auf CET
                 const [date, time] = timestampInput.split("T");
                 const [year, month, day] = date.split("-");
                 const [hours, minutes] = time.split(":");
-                timestamp = new Date(Date.UTC(year, month - 1, day, hours, minutes));
+                // Erstelle ein neues Datum-Objekt und setze die CET-Zeitzone (UTC+1)
+                timestamp = new Date(Date.UTC(year, month - 1, day, hours - 1, minutes));
             } else {
                 timestamp = new Date();
+                // Anpassung auf CET
+                timestamp.setHours(timestamp.getHours() - 1);
             }
 
             fetch('/save-meter-reading', {
@@ -229,3 +232,4 @@
     </script>
 </body>
 </html>
+
