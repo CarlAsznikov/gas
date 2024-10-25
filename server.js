@@ -8,9 +8,13 @@ const PORT = process.env.PORT || 3000;
 // Verbindung zu MongoDB herstellen
 const mongoURI = 'mongodb+srv://carlasznikov:NZMOf3HdwMZM2Xjh@cluster0.pozoi.mongodb.net/gasMeterDB?retryWrites=true&w=majority&appName=Cluster0';
 
-mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => console.log('MongoDB erfolgreich verbunden'))
-    .catch(error => console.error('Fehler beim Verbinden mit MongoDB:', error));
+mongoose.connect(mongoURI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 5000 // Timeout auf 5 Sekunden setzen
+})
+.then(() => console.log('MongoDB erfolgreich verbunden'))
+.catch(error => console.error('Fehler beim Verbinden mit MongoDB:', error));
 
 const meterReadingSchema = new mongoose.Schema({
     reading: Number,
