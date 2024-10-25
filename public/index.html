@@ -128,24 +128,25 @@
     </div>
 
     <script>
+        // Funktion, um das datetime-local Feld mit der aktuellen CET-Zeit zu füllen
+        function setCurrentDateTime() {
+            const now = new Date();
+            // Konvertiere die Zeit in die CET-Zeitzone
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset() + 60); // CET ist UTC+1
+            const dateStr = now.toISOString().slice(0, 16); // Format: YYYY-MM-DDTHH:MM
+            document.getElementById('timestamp').value = dateStr;
+        }
+
         document.getElementById('gasForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const meterReading = parseFloat(document.getElementById('meterReading').value).toFixed(3);
             const timestampInput = document.getElementById('timestamp').value;
 
-            let timestamp;
-            if (timestampInput) {
-                // Parse den Wert des datetime-local Inputs und setze die Zeitzone auf CET
-                const [date, time] = timestampInput.split("T");
-                const [year, month, day] = date.split("-");
-                const [hours, minutes] = time.split(":");
-                // Erstelle ein neues Datum-Objekt und setze die CET-Zeitzone (UTC+1)
-                timestamp = new Date(Date.UTC(year, month - 1, day, hours - 1, minutes));
-            } else {
-                timestamp = new Date();
-                // Anpassung auf CET
-                timestamp.setHours(timestamp.getHours() - 1);
-            }
+            const [date, time] = timestampInput.split("T");
+            const [year, month, day] = date.split("-");
+            const [hours, minutes] = time.split(":");
+            // Setze die CET-Zeit in UTC um (CET ist UTC+1)
+            const timestamp = new Date(Date.UTC(year, month - 1, day, hours - 1, minutes));
 
             fetch('/save-meter-reading', {
                 method: 'POST',
@@ -228,8 +229,11 @@
             .catch(error => console.error('Fehler beim Löschen der Daten:', error));
         }
 
-        window.onload = loadDataAndDisplayTable;
+        // Setze die aktuelle CET-Zeit beim Laden der Seite
+        window.onload = () => {
+            setCurrentDateTime();
+            loadDataAndDisplayTable();
+        };
     </script>
 </body>
 </html>
-
