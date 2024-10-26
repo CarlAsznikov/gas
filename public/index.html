@@ -376,6 +376,7 @@
                             const cell = row.children[0];
                             cell.style.display = this.checked ? '' : 'none';
                         });
+                        localStorage.setItem('showDate', this.checked);
                     });
 
                     document.getElementById('showTimeSinceLastReading').addEventListener('change', function() {
@@ -384,6 +385,7 @@
                             const cell = row.children[1];
                             cell.style.display = this.checked ? '' : 'none';
                         });
+                        localStorage.setItem('showTimeSinceLastReading', this.checked);
                     });
 
                     document.getElementById('showDaysSinceLastReading').addEventListener('change', function() {
@@ -392,6 +394,7 @@
                             const cell = row.children[2];
                             cell.style.display = this.checked ? '' : 'none';
                         });
+                        localStorage.setItem('showDaysSinceLastReading', this.checked);
                     });
 
                     document.getElementById('showMeterReading').addEventListener('change', function() {
@@ -400,6 +403,7 @@
                             const cell = row.children[3];
                             cell.style.display = this.checked ? '' : 'none';
                         });
+                        localStorage.setItem('showMeterReading', this.checked);
                     });
 
                     document.getElementById('showConsumption').addEventListener('change', function() {
@@ -408,6 +412,7 @@
                             const cell = row.children[4];
                             cell.style.display = this.checked ? '' : 'none';
                         });
+                        localStorage.setItem('showConsumption', this.checked);
                     });
 
                     document.getElementById('showConsumptionSinceLastReading').addEventListener('change', function() {
@@ -416,6 +421,7 @@
                             const cell = row.children[5];
                             cell.style.display = this.checked ? '' : 'none';
                         });
+                        localStorage.setItem('showConsumptionSinceLastReading', this.checked);
                     });
 
                     document.getElementById('showForecast').addEventListener('change', function() {
@@ -424,6 +430,7 @@
                             const cell = row.children[6];
                             cell.style.display = this.checked ? '' : 'none';
                         });
+                        localStorage.setItem('showForecast', this.checked);
                     });
 
                     document.getElementById('showForecastConsumption').addEventListener('change', function() {
@@ -432,6 +439,7 @@
                             const cell = row.children[7];
                             cell.style.display = this.checked ? '' : 'none';
                         });
+                        localStorage.setItem('showForecastConsumption', this.checked);
                     });
 
                     document.getElementById('showDeviation').addEventListener('change', function() {
@@ -440,6 +448,7 @@
                             const cell = row.children[8];
                             cell.style.display = this.checked ? '' : 'none';
                         });
+                        localStorage.setItem('showDeviation', this.checked);
                     });
 
                     document.getElementById('showAverageDailyConsumption').addEventListener('change', function() {
@@ -448,6 +457,7 @@
                             const cell = row.children[9];
                             cell.style.display = this.checked ? '' : 'none';
                         });
+                        localStorage.setItem('showAverageDailyConsumption', this.checked);
                     });
 
                     document.getElementById('showForecastDailyConsumption').addEventListener('change', function() {
@@ -456,6 +466,7 @@
                             const cell = row.children[10];
                             cell.style.display = this.checked ? '' : 'none';
                         });
+                        localStorage.setItem('showForecastDailyConsumption', this.checked);
                     });
 
                     document.getElementById('showActions').addEventListener('change', function() {
@@ -464,7 +475,36 @@
                             const cell = row.children[11];
                             cell.style.display = this.checked ? '' : 'none';
                         });
+                        localStorage.setItem('showActions', this.checked);
                     });
+
+                    // Wiederherstellen der Checkbox-Zustände
+                    document.getElementById('showDate').checked = localStorage.getItem('showDate') === 'true';
+                    document.getElementById('showTimeSinceLastReading').checked = localStorage.getItem('showTimeSinceLastReading') === 'true';
+                    document.getElementById('showDaysSinceLastReading').checked = localStorage.getItem('showDaysSinceLastReading') === 'true';
+                    document.getElementById('showMeterReading').checked = localStorage.getItem('showMeterReading') === 'true';
+                    document.getElementById('showConsumption').checked = localStorage.getItem('showConsumption') === 'true';
+                    document.getElementById('showConsumptionSinceLastReading').checked = localStorage.getItem('showConsumptionSinceLastReading') === 'true';
+                    document.getElementById('showForecast').checked = localStorage.getItem('showForecast') === 'true';
+                    document.getElementById('showForecastConsumption').checked = localStorage.getItem('showForecastConsumption') === 'true';
+                    document.getElementById('showDeviation').checked = localStorage.getItem('showDeviation') === 'true';
+                    document.getElementById('showAverageDailyConsumption').checked = localStorage.getItem('showAverageDailyConsumption') === 'true';
+                    document.getElementById('showForecastDailyConsumption').checked = localStorage.getItem('showForecastDailyConsumption') === 'true';
+                    document.getElementById('showActions').checked = localStorage.getItem('showActions') === 'true';
+
+                    // Aktualisieren der Spalten basierend auf den gespeicherten Zuständen
+                    document.getElementById('showDate').dispatchEvent(new Event('change'));
+                    document.getElementById('showTimeSinceLastReading').dispatchEvent(new Event('change'));
+                    document.getElementById('showDaysSinceLastReading').dispatchEvent(new Event('change'));
+                    document.getElementById('showMeterReading').dispatchEvent(new Event('change'));
+                    document.getElementById('showConsumption').dispatchEvent(new Event('change'));
+                    document.getElementById('showConsumptionSinceLastReading').dispatchEvent(new Event('change'));
+                    document.getElementById('showForecast').dispatchEvent(new Event('change'));
+                    document.getElementById('showForecastConsumption').dispatchEvent(new Event('change'));
+                    document.getElementById('showDeviation').dispatchEvent(new Event('change'));
+                    document.getElementById('showAverageDailyConsumption').dispatchEvent(new Event('change'));
+                    document.getElementById('showForecastDailyConsumption').dispatchEvent(new Event('change'));
+                    document.getElementById('showActions').dispatchEvent(new Event('change'));
                 })
                 .catch(error => console.error('Fehler beim Laden der Daten:', error));
         }
