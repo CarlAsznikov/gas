@@ -142,10 +142,11 @@
                     <th>Tage seit letzter Messung</th>
                     <th>Zählerstand</th>
                     <th>Verbrauch</th>
-                    <th>Verbrauch seit letzter Messung</th> <!-- Neue Spalte -->
+                    <th>Verbrauch seit letzter Messung</th>
                     <th>Prognose</th>
                     <th>Prognose-Verbrauch</th>
                     <th>Abweichung %</th>
+                    <th>Ø tägl. Verbrauch seit letzter Messung</th> <!-- Neue Spalte -->
                     <th>Aktionen</th>
                 </tr>
             </thead>
@@ -263,6 +264,7 @@
                         const forecastCell = document.createElement('td');
                         const forecastConsumptionCell = document.createElement('td');
                         const deviationCell = document.createElement('td');
+                        const averageDailyConsumptionCell = document.createElement('td'); // Neue Zelle für durchschnittlichen täglichen Verbrauch
                         const actionCell = document.createElement('td');
                         const deleteButton = document.createElement('button');
 
@@ -304,10 +306,15 @@
                             const lastConsumption = parseFloat(calculateConsumption(parseFloat(lastEntries[index - 1].reading), year));
                             const consumptionSinceLast = consumptionValue - lastConsumption;
                             consumptionSinceLastReadingCell.textContent = consumptionSinceLast.toFixed(3);
+
+                            // Durchschnittlicher täglicher Verbrauch seit letzter Messung berechnen
+                            const averageDailyConsumption = days > 0 ? consumptionSinceLast / days : 0;
+                            averageDailyConsumptionCell.textContent = averageDailyConsumption.toFixed(3);
                         } else {
                             timeSinceLastReadingCell.textContent = '---';
                             daysSinceLastReadingCell.textContent = '---';
                             consumptionSinceLastReadingCell.textContent = '---';
+                            averageDailyConsumptionCell.textContent = '---';
                         }
 
                         row.appendChild(dateCell);
@@ -319,6 +326,7 @@
                         row.appendChild(forecastCell);
                         row.appendChild(forecastConsumptionCell);
                         row.appendChild(deviationCell);
+                        row.appendChild(averageDailyConsumptionCell); // Neue Zelle für durchschnittlichen täglichen Verbrauch hinzufügen
                         row.appendChild(actionCell);
                         tableBody.appendChild(row);
                     });
