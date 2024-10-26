@@ -139,9 +139,10 @@
                 <tr>
                     <th>Datum</th>
                     <th>Zeit seit letzter Messung</th>
-                    <th>Tage seit letzter Messung</th> <!-- Neue Spalte -->
+                    <th>Tage seit letzter Messung</th>
                     <th>Zählerstand</th>
                     <th>Verbrauch</th>
+                    <th>Verbrauch seit letzter Messung</th> <!-- Neue Spalte -->
                     <th>Prognose</th>
                     <th>Prognose-Verbrauch</th>
                     <th>Abweichung %</th>
@@ -258,6 +259,7 @@
                         const daysSinceLastReadingCell = document.createElement('td'); // Neue Zelle für Tage
                         const readingCell = document.createElement('td');
                         const consumptionCell = document.createElement('td');
+                        const consumptionSinceLastReadingCell = document.createElement('td'); // Neue Zelle für Verbrauch seit letzter Messung
                         const forecastCell = document.createElement('td');
                         const forecastConsumptionCell = document.createElement('td');
                         const deviationCell = document.createElement('td');
@@ -297,9 +299,15 @@
                             // Tage seit letzter Messung berechnen
                             const days = Math.floor(hours / 24);
                             daysSinceLastReadingCell.textContent = days.toString();
+
+                            // Verbrauch seit letzter Messung berechnen
+                            const lastConsumption = parseFloat(calculateConsumption(parseFloat(lastEntries[index - 1].reading), year));
+                            const consumptionSinceLast = consumptionValue - lastConsumption;
+                            consumptionSinceLastReadingCell.textContent = consumptionSinceLast.toFixed(3);
                         } else {
                             timeSinceLastReadingCell.textContent = '---';
                             daysSinceLastReadingCell.textContent = '---';
+                            consumptionSinceLastReadingCell.textContent = '---';
                         }
 
                         row.appendChild(dateCell);
@@ -307,6 +315,7 @@
                         row.appendChild(daysSinceLastReadingCell); // Neue Zelle für Tage hinzufügen
                         row.appendChild(readingCell);
                         row.appendChild(consumptionCell);
+                        row.appendChild(consumptionSinceLastReadingCell); // Neue Zelle für Verbrauch seit letzter Messung hinzufügen
                         row.appendChild(forecastCell);
                         row.appendChild(forecastConsumptionCell);
                         row.appendChild(deviationCell);
