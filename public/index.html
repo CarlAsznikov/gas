@@ -120,6 +120,7 @@
                     <th>Verbrauch</th>
                     <th>Prognose</th>
                     <th>Prognose-Verbrauch</th>
+                    <th>Abweichung %</th>
                     <th>Aktionen</th>
                 </tr>
             </thead>
@@ -203,6 +204,12 @@
             return (forecastValue - baseValue).toFixed(3);
         }
 
+        function calculateDeviation(consumption, forecastConsumption) {
+            if (forecastConsumption === 0) return "N/A"; // Avoid division by zero
+            const deviation = (consumption / forecastConsumption) - 1;
+            return (deviation >= 0 ? "+" : "") + (deviation * 100).toFixed(2) + "%";
+        }
+
         function loadDataAndDisplayTable() {
             fetch('/get-readings')
                 .then(response => response.json())
@@ -218,6 +225,7 @@
                         const consumptionCell = document.createElement('td');
                         const forecastCell = document.createElement('td');
                         const forecastConsumptionCell = document.createElement('td');
+                        const deviationCell = document.createElement('td');
                         const actionCell = document.createElement('td');
                         const deleteButton = document.createElement('button');
 
@@ -226,14 +234,16 @@
                         const year = date.getFullYear();
 
                         const forecastValue = parseFloat(calculateForecast(entry.timestamp));
-                        const consumptionValue = calculateConsumption(parseFloat(entry.reading), year);
-                        const forecastConsumptionValue = calculateForecastConsumption(forecastValue, year);
+                        const consumptionValue = parseFloat(calculateConsumption(parseFloat(entry.reading), year));
+                        const forecastConsumptionValue = parseFloat(calculateForecastConsumption(forecastValue, year));
+                        const deviationValue = calculateDeviation(consumptionValue, forecastConsumptionValue);
 
                         dateCell.textContent = formattedDate;
                         readingCell.textContent = parseFloat(entry.reading).toFixed(3);
-                        consumptionCell.textContent = consumptionValue;
+                        consumptionCell.textContent = consumptionValue.toFixed(3);
                         forecastCell.textContent = forecastValue.toFixed(3);
-                        forecastConsumptionCell.textContent = forecastConsumptionValue;
+                        forecastConsumptionCell.textContent = forecastConsumptionValue.toFixed(3);
+                        deviationCell.textContent = deviationValue;
 
                         deleteButton.textContent = '✕';
                         deleteButton.className = 'delete-button';
@@ -245,6 +255,7 @@
                         row.appendChild(consumptionCell);
                         row.appendChild(forecastCell);
                         row.appendChild(forecastConsumptionCell);
+                        row.appendChild(deviationCell);
                         row.appendChild(actionCell);
                         tableBody.appendChild(row);
                     });
