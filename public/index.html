@@ -119,6 +119,7 @@
                     <th>Zählerstand</th>
                     <th>Verbrauch</th>
                     <th>Prognose</th>
+                    <th>Prognose-Verbrauch</th>
                     <th>Aktionen</th>
                 </tr>
             </thead>
@@ -197,6 +198,11 @@
             return (meterReading - baseValue).toFixed(3);
         }
 
+        function calculateForecastConsumption(forecastValue, year) {
+            const baseValue = startValues[year] || startValues[2024];
+            return (forecastValue - baseValue).toFixed(3);
+        }
+
         function loadDataAndDisplayTable() {
             fetch('/get-readings')
                 .then(response => response.json())
@@ -211,6 +217,7 @@
                         const readingCell = document.createElement('td');
                         const consumptionCell = document.createElement('td');
                         const forecastCell = document.createElement('td');
+                        const forecastConsumptionCell = document.createElement('td');
                         const actionCell = document.createElement('td');
                         const deleteButton = document.createElement('button');
 
@@ -218,13 +225,15 @@
                         const formattedDate = `${String(date.getDate()).padStart(2, '0')}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getFullYear()).slice(-2)}, ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
                         const year = date.getFullYear();
 
-                        const forecastValue = calculateForecast(entry.timestamp);
+                        const forecastValue = parseFloat(calculateForecast(entry.timestamp));
                         const consumptionValue = calculateConsumption(parseFloat(entry.reading), year);
+                        const forecastConsumptionValue = calculateForecastConsumption(forecastValue, year);
 
                         dateCell.textContent = formattedDate;
                         readingCell.textContent = parseFloat(entry.reading).toFixed(3);
                         consumptionCell.textContent = consumptionValue;
-                        forecastCell.textContent = forecastValue;
+                        forecastCell.textContent = forecastValue.toFixed(3);
+                        forecastConsumptionCell.textContent = forecastConsumptionValue;
 
                         deleteButton.textContent = '✕';
                         deleteButton.className = 'delete-button';
@@ -235,6 +244,7 @@
                         row.appendChild(readingCell);
                         row.appendChild(consumptionCell);
                         row.appendChild(forecastCell);
+                        row.appendChild(forecastConsumptionCell);
                         row.appendChild(actionCell);
                         tableBody.appendChild(row);
                     });
