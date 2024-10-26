@@ -1,8 +1,14 @@
+const basicAuth = require('express-basic-auth');
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const path = require('path');
 const app = express();
+app.use(basicAuth({
+  users: { 'carlasznikov': 'Fehler1234*_*ga2016' }, // Benutzername und Passwort festlegen
+  challenge: true  // Aktiviert den Authentifizierungsdialog im Browser
+}));
+
 const PORT = process.env.PORT || 3000;
 
 // Verbindung zu MongoDB herstellen
