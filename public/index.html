@@ -62,15 +62,16 @@
 
         .table-container {
             width: 100%;
-            max-width: 600px;
+            max-width: 100vw; /* Begrenze die Breite auf das Fenster */
             margin-top: 20px;
-            overflow-y: auto;
+            overflow-x: auto; /* Ermöglicht horizontales Scrollen, falls nötig */
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
             background-color: white;
+            white-space: nowrap; /* Verhindert Zeilenumbruch in Zellen */
         }
 
         th, td {
