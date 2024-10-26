@@ -173,7 +173,7 @@
 
     <div class="checkbox-list">
         <label><input type="checkbox" id="showDate" checked>Datum</label>
-        <label><input type="checkbox" id="showTimeSinceLastReading" checked>Zeit seit letzter Messung</label>
+        <label><input type="checkbox" id="showHoursSinceLastReading" checked>Stunden seit letzter Messung</label>
         <label><input type="checkbox" id="showDaysSinceLastReading" checked>Tage seit letzter Messung</label>
         <label><input type="checkbox" id="showMeterReading" checked>Zählerstand</label>
         <label><input type="checkbox" id="showConsumption" checked>Verbrauch</label>
@@ -192,7 +192,7 @@
             <thead>
                 <tr>
                     <th class="date">Datum</th>
-                    <th class="timeSinceLastReading">Zeit seit letzter Messung</th>
+                    <th class="hoursSinceLastReading">Stunden seit letzter Messung</th>
                     <th class="daysSinceLastReading">Tage seit letzter Messung</th>
                     <th class="meterReading">Zählerstand</th>
                     <th class="consumption">Verbrauch</th>
@@ -311,7 +311,7 @@
                     lastEntries.forEach((entry, index) => {
                         const row = document.createElement('tr');
                         const dateCell = document.createElement('td');
-                        const timeSinceLastReadingCell = document.createElement('td');
+                        const hoursSinceLastReadingCell = document.createElement('td');
                         const daysSinceLastReadingCell = document.createElement('td');
                         const readingCell = document.createElement('td');
                         const consumptionCell = document.createElement('td');
@@ -351,20 +351,19 @@
                         if (index > 0) {
                             const lastDate = new Date(lastEntries[index - 1].timestamp);
                             const timeDiff = date - lastDate;
-                            const hours = Math.floor(timeDiff / (1000 * 60 * 60));
-                            timeSinceLastReadingCell.textContent = `${String(hours).padStart(2, '0')}`;
-
-                            const days = Math.floor(hours / 24);
-                            daysSinceLastReadingCell.textContent = days.toString();
+                            const hours = timeDiff / (1000 * 60 * 60);
+                            const days = hours / 24;
+                            hoursSinceLastReadingCell.textContent = hours.toFixed(2);
+                            daysSinceLastReadingCell.textContent = days.toFixed(2);
 
                             const lastConsumption = parseFloat(calculateConsumption(parseFloat(lastEntries[index - 1].reading), year));
                             const consumptionSinceLast = consumptionValue - lastConsumption;
                             consumptionSinceLastReadingCell.textContent = consumptionSinceLast.toFixed(3);
 
-                            const averageDailyConsumption = days > 0 ? consumptionSinceLast / days : 0;
+                            const averageDailyConsumption = consumptionSinceLast / days;
                             averageDailyConsumptionCell.textContent = averageDailyConsumption.toFixed(3);
                         } else {
-                            timeSinceLastReadingCell.textContent = '---';
+                            hoursSinceLastReadingCell.textContent = '---';
                             daysSinceLastReadingCell.textContent = '---';
                             consumptionSinceLastReadingCell.textContent = '---';
                             averageDailyConsumptionCell.textContent = '---';
@@ -380,7 +379,7 @@
                         forecastDailyConsumptionCell.textContent = forecastDailyConsumption.toFixed(3);
 
                         row.appendChild(dateCell);
-                        row.appendChild(timeSinceLastReadingCell);
+                        row.appendChild(hoursSinceLastReadingCell);
                         row.appendChild(daysSinceLastReadingCell);
                         row.appendChild(readingCell);
                         row.appendChild(consumptionCell);
@@ -404,13 +403,13 @@
                         localStorage.setItem('showDate', this.checked);
                     });
 
-                    document.getElementById('showTimeSinceLastReading').addEventListener('change', function() {
-                        document.querySelectorAll('.timeSinceLastReading').forEach(cell => cell.style.display = this.checked ? '' : 'none');
+                    document.getElementById('showHoursSinceLastReading').addEventListener('change', function() {
+                        document.querySelectorAll('.hoursSinceLastReading').forEach(cell => cell.style.display = this.checked ? '' : 'none');
                         document.querySelectorAll('tbody tr').forEach(row => {
                             const cell = row.children[1];
                             cell.style.display = this.checked ? '' : 'none';
                         });
-                        localStorage.setItem('showTimeSinceLastReading', this.checked);
+                        localStorage.setItem('showHoursSinceLastReading', this.checked);
                     });
 
                     document.getElementById('showDaysSinceLastReading').addEventListener('change', function() {
@@ -505,7 +504,7 @@
 
                     // Wiederherstellen der Checkbox-Zustände
                     document.getElementById('showDate').checked = localStorage.getItem('showDate') === 'true';
-                    document.getElementById('showTimeSinceLastReading').checked = localStorage.getItem('showTimeSinceLastReading') === 'true';
+                    document.getElementById('showHoursSinceLastReading').checked = localStorage.getItem('showHoursSinceLastReading') === 'true';
                     document.getElementById('showDaysSinceLastReading').checked = localStorage.getItem('showDaysSinceLastReading') === 'true';
                     document.getElementById('showMeterReading').checked = localStorage.getItem('showMeterReading') === 'true';
                     document.getElementById('showConsumption').checked = localStorage.getItem('showConsumption') === 'true';
@@ -519,7 +518,7 @@
 
                     // Aktualisieren der Spalten basierend auf den gespeicherten Zuständen
                     document.getElementById('showDate').dispatchEvent(new Event('change'));
-                    document.getElementById('showTimeSinceLastReading').dispatchEvent(new Event('change'));
+                    document.getElementById('showHoursSinceLastReading').dispatchEvent(new Event('change'));
                     document.getElementById('showDaysSinceLastReading').dispatchEvent(new Event('change'));
                     document.getElementById('showMeterReading').dispatchEvent(new Event('change'));
                     document.getElementById('showConsumption').dispatchEvent(new Event('change'));
