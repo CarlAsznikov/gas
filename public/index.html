@@ -146,7 +146,8 @@
                     <th>Prognose</th>
                     <th>Prognose-Verbrauch</th>
                     <th>Abweichung %</th>
-                    <th>Ø tägl. Verbrauch seit letzter Messung</th> <!-- Neue Spalte -->
+                    <th>Ø tägl. Verbrauch seit letzter Messung</th>
+                    <th>Prognostizierter Verbrauch pro Tag</th>
                     <th>Aktionen</th>
                 </tr>
             </thead>
@@ -265,6 +266,7 @@
                         const forecastConsumptionCell = document.createElement('td');
                         const deviationCell = document.createElement('td');
                         const averageDailyConsumptionCell = document.createElement('td'); // Neue Zelle für durchschnittlichen täglichen Verbrauch
+                        const forecastDailyConsumptionCell = document.createElement('td'); // Neue Zelle für prognostizierten täglichen Verbrauch
                         const actionCell = document.createElement('td');
                         const deleteButton = document.createElement('button');
 
@@ -317,6 +319,16 @@
                             averageDailyConsumptionCell.textContent = '---';
                         }
 
+                            // Prognostizierter täglicher Verbrauch berechnen
+                            const monthlyGrowth = [
+                                192.4758595, 156.3866359, 144.3568947, 96.23792977,
+                                48.11896489, 24.05948244, 24.05948244, 24.05948244,
+                                60.14870611, 96.23792977, 144.3568947, 192.4758595
+                        ];
+                        const daysInCurrentMonth = new Date(year, month + 1, 0).getDate();
+                        const forecastDailyConsumption = monthlyGrowth[month] / daysInCurrentMonth;
+                        forecastDailyConsumptionCell.textContent = forecastDailyConsumption.toFixed(3);
+
                         row.appendChild(dateCell);
                         row.appendChild(timeSinceLastReadingCell); // Neue Zelle hinzufügen
                         row.appendChild(daysSinceLastReadingCell); // Neue Zelle für Tage hinzufügen
@@ -327,6 +339,7 @@
                         row.appendChild(forecastConsumptionCell);
                         row.appendChild(deviationCell);
                         row.appendChild(averageDailyConsumptionCell); // Neue Zelle für durchschnittlichen täglichen Verbrauch hinzufügen
+                        row.appendChild(forecastDailyConsumptionCell); // Neue Zelle hinzufügen
                         row.appendChild(actionCell);
                         tableBody.appendChild(row);
                     });
