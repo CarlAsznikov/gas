@@ -1,77 +1,78 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 const path = require('path');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Verbindung zu MongoDB herstellen
-const mongoURI = process.env.MONGODB_URI;
+// MongoDB-Verbindung
+const mongoURI = 'mongodb+srv://<USERNAME>:<PASSWORD>@cluster0.pozoi.mongodb.net/gasMeterDB?retryWrites=true&w=majority&appName=Cluster0';
+mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => console.log('MongoDB verbunden'))
+    .catch(err => console.error('Fehler bei der Verbindung zu MongoDB:', err));
 
-mongoose.connect(mongoURI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    serverSelectionTimeoutMS: 5000 // Timeout auf 5 Sekunden setzen
-})
-.then(() => console.log('MongoDB erfolgreich verbunden'))
-.catch(error => console.error('Fehler beim Verbinden mit MongoDB:', error));
+// Middleware
+app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname, 'public')));
 
+// Mongoose-Schema und Modell
 const meterReadingSchema = new mongoose.Schema({
     reading: Number,
-    timestamp: { type: Date, default: Date.now }
+    timestamp: Date
 });
 
 const MeterReading = mongoose.model('MeterReading', meterReadingSchema);
 
-app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'public')));
-
-// API-Endpunkt zum Speichern des Zählerstandes
+// API-Routen
 app.post('/save-meter-reading', async (req, res) => {
-    console.log('POST /save-meter-reading aufgerufen');
-    console.log('Anfrageinhalt:', req.body);
-
     try {
+        const { reading, timestamp } = req.body;
+
+        // Logge den Zeitstempel, den wir vom Client erhalten
+        console.log("Empfangener Zeitstempel vom Client:", timestamp);
+
+        // Prüfe, ob der Zeitstempel gültig ist
+        if (!timestamp) {
+            return res.status(400).send('Zeitstempel fehlt.');
+        }
+
         const newReading = new MeterReading({
-            reading: req.body.reading
+            reading: parseFloat(reading),
+            timestamp: new Date(timestamp)  // Verwende den übergebenen Zeitstempel
         });
+
         await newReading.save();
-        console.log('Zählerstand erfolgreich gespeichert');
+        console.log("Erfolgreich gespeichert:", newReading);
         res.send('Daten erfolgreich gespeichert');
     } catch (error) {
         console.error('Fehler beim Speichern der Daten:', error);
-        res.status(500).send('Fehler beim Speichern der Daten: ' + error.message);
+        res.status(500).send('Fehler beim Speichern der Daten');
     }
 });
 
-// API-Endpunkt zum Abrufen aller Zählerstände
 app.get('/get-readings', async (req, res) => {
     try {
-        const readings = await MeterReading.find().sort({ timestamp: 1 });
+        const readings = await MeterReading.find().sort({ timestamp: -1 });
         res.json(readings);
     } catch (error) {
         console.error('Fehler beim Laden der Daten:', error);
-        res.status(500).send('Fehler beim Laden der Daten: ' + error.message);
+        res.status(500).send('Fehler beim Laden der Daten');
     }
 });
 
-// Endpunkt zum Löschen eines Zählerstands anhand der ID
 app.delete('/delete-reading/:id', async (req, res) => {
     try {
-        const id = req.params.id;
+        const { id } = req.params;
         await MeterReading.findByIdAndDelete(id);
-        res.send('Eintrag gelöscht');
+        res.send('Daten erfolgreich gelöscht');
     } catch (error) {
-        console.error('Fehler beim Löschen des Eintrags:', error);
-        res.status(500).send('Fehler beim Löschen des Eintrags');
+        console.error('Fehler beim Löschen der Daten:', error);
+        res.status(500).send('Fehler beim Löschen der Daten');
     }
 });
 
-// Startseite anzeigen (optional, falls du eine index.html hast)
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
+// Start des Servers
 app.listen(PORT, () => {
-    console.log(`Server läuft auf http://localhost:${PORT}`);
+    console.log(`Server läuft auf Port ${PORT}`);
 });
