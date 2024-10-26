@@ -139,6 +139,7 @@
                 <tr>
                     <th>Datum</th>
                     <th>Zeit seit letzter Messung</th>
+                    <th>Tage seit letzter Messung</th> <!-- Neue Spalte -->
                     <th>Zählerstand</th>
                     <th>Verbrauch</th>
                     <th>Prognose</th>
@@ -254,6 +255,7 @@
                         const row = document.createElement('tr');
                         const dateCell = document.createElement('td');
                         const timeSinceLastReadingCell = document.createElement('td'); // Neue Zelle
+                        const daysSinceLastReadingCell = document.createElement('td'); // Neue Zelle für Tage
                         const readingCell = document.createElement('td');
                         const consumptionCell = document.createElement('td');
                         const forecastCell = document.createElement('td');
@@ -291,12 +293,18 @@
                             const timeDiff = date - lastDate;
                             const hours = Math.floor(timeDiff / (1000 * 60 * 60));
                             timeSinceLastReadingCell.textContent = `${String(hours).padStart(2, '0')}`;
+
+                            // Tage seit letzter Messung berechnen
+                            const days = Math.floor(hours / 24);
+                            daysSinceLastReadingCell.textContent = days.toString();
                         } else {
                             timeSinceLastReadingCell.textContent = '---';
+                            daysSinceLastReadingCell.textContent = '---';
                         }
 
                         row.appendChild(dateCell);
                         row.appendChild(timeSinceLastReadingCell); // Neue Zelle hinzufügen
+                        row.appendChild(daysSinceLastReadingCell); // Neue Zelle für Tage hinzufügen
                         row.appendChild(readingCell);
                         row.appendChild(consumptionCell);
                         row.appendChild(forecastCell);
