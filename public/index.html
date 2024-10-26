@@ -62,16 +62,16 @@
 
         .table-container {
             width: 100%;
-            max-width: 100vw; /* Begrenze die Breite auf das Fenster */
+            max-width: 100vw;
             margin-top: 20px;
-            overflow-x: auto; /* Ermöglicht horizontales Scrollen, falls nötig */
+            overflow-x: auto;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
             background-color: white;
-            white-space: nowrap; /* Verhindert Zeilenumbruch in Zellen */
+            white-space: nowrap;
         }
 
         th, td {
@@ -86,24 +86,24 @@
         }
 
         .delete-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background-color: #e0e0e0; /* Helleres Grau für den Hintergrund */
-    color: #9e9e9e; /* Dunkleres Grau für das "X" */
-    border: none;
-    cursor: pointer;
-    font-size: 14px;
-    line-height: 0;
-    transition: background-color 0.3s ease; /* Sanfter Hover-Effekt */
-}
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #e0e0e0; /* Helleres Grau für den Hintergrund */
+            color: #9e9e9e; /* Dunkleres Grau für das "X" */
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            line-height: 0;
+            transition: background-color 0.3s ease; /* Sanfter Hover-Effekt */
+        }
 
-.delete-button:hover {
-    background-color: #d3d3d3; /* Dezenter Hover-Effekt */
-}
+        .delete-button:hover {
+            background-color: #d3d3d3; /* Dezenter Hover-Effekt */
+        }
     </style>
 </head>
 <body>
@@ -150,10 +150,8 @@
 
         document.getElementById('gasForm').addEventListener('submit', function(e) {
             e.preventDefault();
-
             const meterReading = parseFloat(document.getElementById('meterReading').value).toFixed(3);
             const timestampInput = document.getElementById('timestamp').value;
-
             const timestamp = new Date(timestampInput);
 
             fetch('/save-meter-reading', {
@@ -218,14 +216,12 @@
 
         function applyDeviationColor(cell, deviation) {
             const absoluteDeviation = Math.abs(deviation);
-            const intensity = Math.min(absoluteDeviation / 100, 1); // Begrenze die Intensität auf 1
+            const intensity = Math.min(absoluteDeviation / 100, 1);
 
             if (deviation > 0) {
-                // Rote Farbskala für positive Werte
-                cell.style.backgroundColor = `rgba(255, 99, 71, ${intensity * 1.0})`; // rgba für transparente Farbe
+                cell.style.backgroundColor = `rgba(255, 99, 71, ${intensity})`;
             } else {
-                // Grüne Farbskala für negative Werte
-                cell.style.backgroundColor = `rgba(144, 238, 144, ${intensity * 1.0})`; // rgba für transparente Farbe
+                cell.style.backgroundColor = `rgba(144, 238, 144, ${intensity})`;
             }
         }
 
