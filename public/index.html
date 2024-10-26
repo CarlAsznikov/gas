@@ -120,6 +120,11 @@
         .negative-deviation {
             background-color: rgba(255, 87, 34, 0.3);
         }
+
+        /* Ausgeblendete Spalten */
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -138,15 +143,16 @@
             <thead>
                 <tr>
                     <th>Datum</th>
-                    <th>Zeit seit letzter Messung</th>
-                    <th>Tage seit letzter Messung</th>
+                    <th class="hidden">Zeit seit letzter Messung</th>
+                    <th class="hidden">Tage seit letzter Messung</th>
                     <th>Zählerstand</th>
                     <th>Verbrauch</th>
-                    <th>Verbrauch seit letzter Messung</th>
+                    <th class="hidden">Verbrauch seit letzter Messung</th>
                     <th>Prognose</th>
                     <th>Prognose-Verbrauch</th>
                     <th>Abweichung %</th>
-                    <th>Ø tägl. Verbrauch seit letzter Messung</th> <!-- Neue Spalte -->
+                    <th>Ø tägl. Verbrauch seit letzter Messung</th>
+                    <th>Prognostizierter Verbrauch pro Tag</th> <!-- Neue Spalte -->
                     <th>Aktionen</th>
                 </tr>
             </thead>
@@ -158,6 +164,11 @@
 
     <script>
         const startValues = { 2024: 2795.650 };
+        const monthlyGrowth = [
+            192.4758595, 156.3866359, 144.3568947, 96.23792977,
+            48.11896489, 24.05948244, 24.05948244, 24.05948244,
+            60.14870611, 96.23792977, 144.3568947, 192.4758595
+        ];
 
         function setCurrentDateTime() {
             const now = new Date();
@@ -197,11 +208,6 @@
         }
 
         function calculateForecast(timestamp) {
-            const monthlyGrowth = [
-                192.4758595, 156.3866359, 144.3568947, 96.23792977,
-                48.11896489, 24.05948244, 24.05948244, 24.05948244,
-                60.14870611, 96.23792977, 144.3568947, 192.4758595
-            ];
             const date = new Date(timestamp);
             const year = date.getFullYear();
             const month = date.getMonth();
@@ -265,12 +271,14 @@
                         const forecastConsumptionCell = document.createElement('td');
                         const deviationCell = document.createElement('td');
                         const averageDailyConsumptionCell = document.createElement('td'); // Neue Zelle für durchschnittlichen täglichen Verbrauch
+                        const projectedDailyConsumptionCell = document.createElement('td'); // Neue Zelle für prognostizierten täglichen Verbrauch
                         const actionCell = document.createElement('td');
                         const deleteButton = document.createElement('button');
 
                         const date = new Date(entry.timestamp);
                         const formattedDate = `${String(date.getDate()).padStart(2, '0')}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getFullYear()).slice(-2)}, ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
                         const year = date.getFullYear();
+                        const month = date.getMonth();
 
                         const forecastValue = parseFloat(calculateForecast(entry.timestamp));
                         const consumptionValue = parseFloat(calculateConsumption(parseFloat(entry.reading), year));
@@ -317,6 +325,11 @@
                             averageDailyConsumptionCell.textContent = '---';
                         }
 
+                        // Prognostizierter täglicher Verbrauch berechnen
+                        const daysInCurrentMonth = new Date(year, month + 1, 0).getDate();
+                        const projectedDailyConsumption = monthlyGrowth[month] / daysInCurrentMonth;
+                        projectedDailyConsumptionCell.textContent = projectedDailyConsumption.toFixed(3);
+
                         row.appendChild(dateCell);
                         row.appendChild(timeSinceLastReadingCell); // Neue Zelle hinzufügen
                         row.appendChild(daysSinceLastReadingCell); // Neue Zelle für Tage hinzufügen
@@ -327,6 +340,7 @@
                         row.appendChild(forecastConsumptionCell);
                         row.appendChild(deviationCell);
                         row.appendChild(averageDailyConsumptionCell); // Neue Zelle für durchschnittlichen täglichen Verbrauch hinzufügen
+                        row.appendChild(projectedDailyConsumptionCell); // Neue Zelle für prognostizierten täglichen Verbrauch hinzufügen
                         row.appendChild(actionCell);
                         tableBody.appendChild(row);
                     });
