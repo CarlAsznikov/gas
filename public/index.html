@@ -85,6 +85,23 @@
             color: white;
         }
 
+        /* Styles für die einklappbare Aktionen-Spalte */
+        .actions-container {
+            display: none;
+        }
+
+        .expand-button {
+            background-color: #ccc;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            font-size: 14px;
+        }
+
+        .expanded .actions-container {
+            display: inline-flex;
+        }
+
         .delete-button {
             display: inline-flex;
             align-items: center;
@@ -92,17 +109,17 @@
             width: 24px;
             height: 24px;
             border-radius: 50%;
-            background-color: #e0e0e0; /* Helleres Grau für den Hintergrund */
-            color: #9e9e9e; /* Dunkleres Grau für das "X" */
+            background-color: #e0e0e0;
+            color: #9e9e9e;
             border: none;
             cursor: pointer;
             font-size: 14px;
             line-height: 0;
-            transition: background-color 0.3s ease; /* Sanfter Hover-Effekt */
+            transition: background-color 0.3s ease;
         }
 
         .delete-button:hover {
-            background-color: #d3d3d3; /* Dezenter Hover-Effekt */
+            background-color: #d3d3d3;
         }
     </style>
 </head>
@@ -131,20 +148,18 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- Zeilen werden dynamisch hier eingefügt -->
+                <!-- Dynamische Zeilen hier einfügen -->
             </tbody>
         </table>
     </div>
 
     <script>
-        const startValues = {
-            2024: 2795.650,
-        };
+        const startValues = { 2024: 2795.650 };
 
         function setCurrentDateTime() {
             const now = new Date();
             const localISOString = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString();
-            const dateStr = localISOString.slice(0, 16); // Format: YYYY-MM-DDTHH:MM
+            const dateStr = localISOString.slice(0, 16);
             document.getElementById('timestamp').value = dateStr;
         }
 
@@ -156,9 +171,7 @@
 
             fetch('/save-meter-reading', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ reading: meterReading, timestamp: timestamp.toISOString() }),
             })
             .then(response => response.text())
@@ -169,19 +182,32 @@
             .catch(error => console.error('Fehler:', error));
         });
 
+        function toggleActions(button) {
+            const actionContainer = button.nextElementSibling;
+            button.parentElement.classList.toggle('expanded');
+            button.textContent = actionContainer.style.display === 'none' ? '➖' : '➕';
+        }
+
+        function deleteEntry(id) {
+            if (confirm("Möchten Sie diesen Eintrag wirklich löschen?")) {
+                fetch(`/delete-reading/${id}`, { method: 'DELETE' })
+                .then(response => response.text())
+                .then(() => window.location.reload())
+                .catch(error => console.error('Fehler beim Löschen der Daten:', error));
+            }
+        }
+
         function calculateForecast(timestamp) {
             const monthlyGrowth = [
                 192.4758595, 156.3866359, 144.3568947, 96.23792977,
                 48.11896489, 24.05948244, 24.05948244, 24.05948244,
                 60.14870611, 96.23792977, 144.3568947, 192.4758595
             ];
-
             const date = new Date(timestamp);
             const year = date.getFullYear();
             const month = date.getMonth();
             const dayOfMonth = date.getDate();
             const hours = date.getHours();
-
             let total = startValues[year] || startValues[2024];
 
             for (let m = 0; m < month; m++) {
@@ -209,7 +235,7 @@
         }
 
         function calculateDeviation(consumption, forecastConsumption) {
-            if (forecastConsumption === 0) return "N/A"; // Avoid division by zero
+            if (forecastConsumption === 0) return "N/A";
             const deviation = (consumption / forecastConsumption) - 1;
             return (deviation >= 0 ? "+" : "") + (deviation * 100).toFixed(2) + "%";
         }
@@ -217,12 +243,7 @@
         function applyDeviationColor(cell, deviation) {
             const absoluteDeviation = Math.abs(deviation);
             const intensity = Math.min(absoluteDeviation / 100, 1);
-
-            if (deviation > 0) {
-                cell.style.backgroundColor = `rgba(255, 99, 71, ${intensity})`;
-            } else {
-                cell.style.backgroundColor = `rgba(144, 238, 144, ${intensity})`;
-            }
+            cell.style.backgroundColor = deviation > 0 ? `rgba(255, 99, 71, ${intensity})` : `rgba(144, 238, 144, ${intensity})`;
         }
 
         function loadDataAndDisplayTable() {
@@ -278,17 +299,6 @@
                     });
                 })
                 .catch(error => console.error('Fehler beim Laden der Daten:', error));
-        }
-
-        function deleteEntry(id) {
-            fetch(`/delete-reading/${id}`, {
-                method: 'DELETE',
-            })
-            .then(response => response.text())
-            .then(() => {
-                window.location.reload();
-            })
-            .catch(error => console.error('Fehler beim Löschen der Daten:', error));
         }
 
         window.onload = () => {
