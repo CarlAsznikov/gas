@@ -128,10 +128,11 @@
     </div>
 
     <script>
-        // Funktion, um das datetime-local Feld mit der aktuellen Zeit ohne Zeitzonenanpassung zu füllen
+        // Funktion, um das datetime-local Feld mit der aktuellen Zeit ohne zusätzliche Anpassung zu füllen
         function setCurrentDateTime() {
             const now = new Date();
-            const dateStr = now.toISOString().slice(0, 16); // Format: YYYY-MM-DDTHH:MM
+            const localISOString = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString();
+            const dateStr = localISOString.slice(0, 16); // Format: YYYY-MM-DDTHH:MM
             document.getElementById('timestamp').value = dateStr;
         }
 
@@ -141,7 +142,6 @@
             const meterReading = parseFloat(document.getElementById('meterReading').value).toFixed(3);
             const timestampInput = document.getElementById('timestamp').value;
 
-            // Erstelle ein Date-Objekt basierend auf dem Datum im Feld
             const timestamp = new Date(timestampInput);
 
             fetch('/save-meter-reading', {
