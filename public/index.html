@@ -142,14 +142,15 @@
             const meterReading = parseFloat(document.getElementById('meterReading').value).toFixed(3);
             const timestampInput = document.getElementById('timestamp').value;
 
-            // Zeigt den Wert im Datumsfeld an
-            alert("Eingegebener Wert im Datumsfeld: " + timestampInput);
+            // Debugging: Überprüfe den Wert des Datumsfeldes
+            console.log("Eingegebener Wert im Datumsfeld: " + timestampInput);
 
+            // Erstelle ein Date-Objekt basierend auf dem Datum im Feld
             const timestamp = new Date(`${timestampInput}:00.000+01:00`); // Fügt explizit CET (UTC+1) hinzu
 
-            // Zeigt das erzeugte Date-Objekt und den ISO-String an
-            alert("Erzeugtes Date-Objekt: " + timestamp);
-            alert("ISO-String des Zeitstempels: " + timestamp.toISOString());
+            // Debugging: Überprüfe das erzeugte Date-Objekt
+            console.log("Erzeugtes Date-Objekt: " + timestamp);
+            console.log("ISO-String des Zeitstempels vor Senden: " + timestamp.toISOString());
 
             fetch('/save-meter-reading', {
                 method: 'POST',
@@ -158,7 +159,10 @@
                 },
                 body: JSON.stringify({ reading: meterReading, timestamp: timestamp.toISOString() }),
             })
-            .then(response => response.text())
+            .then(response => {
+                console.log("Serverantwort erhalten:", response);
+                return response.text();
+            })
             .then(data => {
                 alert("Serverantwort: " + data); // Serverantwort als Pop-up anzeigen
                 window.location.reload();
