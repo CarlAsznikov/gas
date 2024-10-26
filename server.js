@@ -32,11 +32,11 @@ app.post('/save-meter-reading', async (req, res) => {
     console.log('Anfrageinhalt:', req.body);
 
     try {
-        // Prüfen, ob ein Zeitstempel angegeben wurde; wenn nicht, wird der aktuelle Zeitstempel verwendet
+        // Verwende den Zeitstempel aus dem Request, oder falls keiner angegeben ist, verwende das aktuelle Datum
         const timestamp = req.body.timestamp ? new Date(req.body.timestamp) : new Date();
         
-        // Den Zeitstempel in der Konsole ausgeben
-        console.log('Verwendeter Zeitstempel:', timestamp);
+        // Prüfe den Zeitstempel, bevor er gespeichert wird
+        console.log('Zu speichernder Zeitstempel:', timestamp);
 
         const newReading = new MeterReading({
             reading: req.body.reading,
@@ -44,7 +44,7 @@ app.post('/save-meter-reading', async (req, res) => {
         });
         
         await newReading.save();
-        console.log('Zählerstand erfolgreich gespeichert');
+        console.log('Zählerstand erfolgreich gespeichert mit Zeitstempel:', timestamp);
         res.send('Daten erfolgreich gespeichert');
     } catch (error) {
         console.error('Fehler beim Speichern der Daten:', error);
