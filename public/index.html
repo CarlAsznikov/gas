@@ -143,6 +143,7 @@
                     <th>Prognose</th>
                     <th>Prognose-Verbrauch</th>
                     <th>Abweichung %</th>
+                    <th>⌀ Tägl. Verbrauch</th>
                     <th>Aktionen</th>
                 </tr>
             </thead>
@@ -241,6 +242,12 @@
             cell.style.backgroundColor = deviation > 0 ? `rgba(255, 99, 71, ${intensity})` : `rgba(144, 238, 144, ${intensity})`;
         }
 
+        function calculateAvgConsumption(consumption, previousTimestamp, currentTimestamp) {
+            const hoursPassed = (currentTimestamp - previousTimestamp) / 36e5;
+            const daysPassed = hoursPassed / 24;
+            return daysPassed > 0 ? (consumption / daysPassed).toFixed(3) : "N/A";
+        }
+
         function loadDataAndDisplayTable() {
             fetch('/get-readings')
                 .then(response => response.json())
@@ -249,7 +256,7 @@
                     const tableBody = document.querySelector('#readingsTable tbody');
                     tableBody.innerHTML = '';
 
-                    lastEntries.forEach(entry => {
+                    lastEntries.forEach((entry, index) => {
                         const row = document.createElement('tr');
                         const dateCell = document.createElement('td');
                         const readingCell = document.createElement('td');
@@ -257,6 +264,7 @@
                         const forecastCell = document.createElement('td');
                         const forecastConsumptionCell = document.createElement('td');
                         const deviationCell = document.createElement('td');
+                        const avgConsumptionCell = document.createElement('td');
                         const actionCell = document.createElement('td');
                         const deleteButton = document.createElement('button');
 
@@ -268,6 +276,9 @@
                         const consumptionValue = parseFloat(calculateConsumption(parseFloat(entry.reading), year));
                         const forecastConsumptionValue = parseFloat(calculateForecastConsumption(forecastValue, year));
                         const deviationValue = calculateDeviation(consumptionValue, forecastConsumptionValue);
+                        
+                        const previousEntry = lastEntries[index - 1];
+                        const avgConsumptionValue = previousEntry ? calculateAvgConsumption(consumptionValue - parseFloat(previousEntry.reading), new Date(previousEntry.timestamp), date) : "N/A";
 
                         dateCell.textContent = formattedDate;
                         readingCell.textContent = parseFloat(entry.reading).toFixed(3);
@@ -275,6 +286,7 @@
                         forecastCell.textContent = forecastValue.toFixed(3);
                         forecastConsumptionCell.textContent = forecastConsumptionValue.toFixed(3);
                         deviationCell.textContent = deviationValue;
+                        avgConsumptionCell.textContent = avgConsumptionValue;
 
                         applyDeviationColor(deviationCell, parseFloat(deviationValue));
 
@@ -289,6 +301,7 @@
                         row.appendChild(forecastCell);
                         row.appendChild(forecastConsumptionCell);
                         row.appendChild(deviationCell);
+                        row.appendChild(avgConsumptionCell);
                         row.appendChild(actionCell);
                         tableBody.appendChild(row);
                     });
