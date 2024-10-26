@@ -138,6 +138,7 @@
             <thead>
                 <tr>
                     <th>Datum</th>
+                    <th>Zeit seit letzter Messung</th>
                     <th>Zählerstand</th>
                     <th>Verbrauch</th>
                     <th>Prognose</th>
@@ -242,59 +243,72 @@
         }
 
         function loadDataAndDisplayTable() {
-            fetch('/get-readings')
-                .then(response => response.json())
-                .then(data => {
-                    const lastEntries = data.slice(-10);
-                    const tableBody = document.querySelector('#readingsTable tbody');
-                    tableBody.innerHTML = '';
+    fetch('/get-readings')
+        .then(response => response.json())
+        .then(data => {
+            const lastEntries = data.slice(-10);
+            const tableBody = document.querySelector('#readingsTable tbody');
+            tableBody.innerHTML = '';
 
-                    lastEntries.forEach(entry => {
-                        const row = document.createElement('tr');
-                        const dateCell = document.createElement('td');
-                        const readingCell = document.createElement('td');
-                        const consumptionCell = document.createElement('td');
-                        const forecastCell = document.createElement('td');
-                        const forecastConsumptionCell = document.createElement('td');
-                        const deviationCell = document.createElement('td');
-                        const actionCell = document.createElement('td');
-                        const deleteButton = document.createElement('button');
+            lastEntries.forEach((entry, index) => {
+                const row = document.createElement('tr');
+                const dateCell = document.createElement('td');
+                const timeSinceLastReadingCell = document.createElement('td'); // Neue Zelle
+                const readingCell = document.createElement('td');
+                const consumptionCell = document.createElement('td');
+                const forecastCell = document.createElement('td');
+                const forecastConsumptionCell = document.createElement('td');
+                const deviationCell = document.createElement('td');
+                const actionCell = document.createElement('td');
+                const deleteButton = document.createElement('button');
 
-                        const date = new Date(entry.timestamp);
-                        const formattedDate = `${String(date.getDate()).padStart(2, '0')}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getFullYear()).slice(-2)}, ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
-                        const year = date.getFullYear();
+                const date = new Date(entry.timestamp);
+                const formattedDate = `${String(date.getDate()).padStart(2, '0')}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getFullYear()).slice(-2)}, ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+                const year = date.getFullYear();
 
-                        const forecastValue = parseFloat(calculateForecast(entry.timestamp));
-                        const consumptionValue = parseFloat(calculateConsumption(parseFloat(entry.reading), year));
-                        const forecastConsumptionValue = parseFloat(calculateForecastConsumption(forecastValue, year));
-                        const deviationValue = calculateDeviation(consumptionValue, forecastConsumptionValue);
+                const forecastValue = parseFloat(calculateForecast(entry.timestamp));
+                const consumptionValue = parseFloat(calculateConsumption(parseFloat(entry.reading), year));
+                const forecastConsumptionValue = parseFloat(calculateForecastConsumption(forecastValue, year));
+                const deviationValue = calculateDeviation(consumptionValue, forecastConsumptionValue);
 
-                        dateCell.textContent = formattedDate;
-                        readingCell.textContent = parseFloat(entry.reading).toFixed(3);
-                        consumptionCell.textContent = consumptionValue.toFixed(3);
-                        forecastCell.textContent = forecastValue.toFixed(3);
-                        forecastConsumptionCell.textContent = forecastConsumptionValue.toFixed(3);
-                        deviationCell.textContent = deviationValue;
+                dateCell.textContent = formattedDate;
+                readingCell.textContent = parseFloat(entry.reading).toFixed(3);
+                consumptionCell.textContent = consumptionValue.toFixed(3);
+                forecastCell.textContent = forecastValue.toFixed(3);
+                forecastConsumptionCell.textContent = forecastConsumptionValue.toFixed(3);
+                deviationCell.textContent = deviationValue;
 
-                        applyDeviationColor(deviationCell, parseFloat(deviationValue));
+                applyDeviationColor(deviationCell, parseFloat(deviationValue));
 
-                        deleteButton.textContent = '✕';
-                        deleteButton.className = 'delete-button';
-                        deleteButton.onclick = () => deleteEntry(entry._id);
-                        actionCell.appendChild(deleteButton);
+                deleteButton.textContent = '✕';
+                deleteButton.className = 'delete-button';
+                deleteButton.onclick = () => deleteEntry(entry._id);
+                actionCell.appendChild(deleteButton);
 
-                        row.appendChild(dateCell);
-                        row.appendChild(readingCell);
-                        row.appendChild(consumptionCell);
-                        row.appendChild(forecastCell);
-                        row.appendChild(forecastConsumptionCell);
-                        row.appendChild(deviationCell);
-                        row.appendChild(actionCell);
-                        tableBody.appendChild(row);
-                    });
-                })
-                .catch(error => console.error('Fehler beim Laden der Daten:', error));
-        }
+                // Zeit seit letzter Messung berechnen
+                if (index > 0) {
+                    const lastDate = new Date(lastEntries[index - 1].timestamp);
+                    const timeDiff = date - lastDate;
+                    const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+                    const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                    timeSinceLastReadingCell.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+                } else {
+                    timeSinceLastReadingCell.textContent = '---';
+                }
+
+                row.appendChild(dateCell);
+                row.appendChild(timeSinceLastReadingCell); // Neue Zelle hinzufügen
+                row.appendChild(readingCell);
+                row.appendChild(consumptionCell);
+                row.appendChild(forecastCell);
+                row.appendChild(forecastConsumptionCell);
+                row.appendChild(deviationCell);
+                row.appendChild(actionCell);
+                tableBody.appendChild(row);
+            });
+        })
+        .catch(error => console.error('Fehler beim Laden der Daten:', error));
+}
 
         window.onload = () => {
             setCurrentDateTime();
