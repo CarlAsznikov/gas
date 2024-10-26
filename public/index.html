@@ -16,7 +16,7 @@
             justify-content: center;
             height: 100vh;
             background-color: #f0f0f0;
-            overflow: hidden; /* Verhindert unnötiges Scrollen */
+            overflow: hidden;
         }
 
         h1 {
@@ -131,26 +131,25 @@
         // Funktion, um das datetime-local Feld mit der aktuellen CET-Zeit zu füllen
         function setCurrentDateTime() {
             const now = new Date();
-            now.setMinutes(now.getMinutes() - now.getTimezoneOffset() + 60); // CET ist UTC+1
-            const dateStr = now.toISOString().slice(0, 16); // Format: YYYY-MM-DDTHH:MM
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            const dateStr = now.toISOString().slice(0, 16);
             document.getElementById('timestamp').value = dateStr;
         }
 
         document.getElementById('gasForm').addEventListener('submit', function(e) {
             e.preventDefault();
-
+            
             const meterReading = parseFloat(document.getElementById('meterReading').value).toFixed(3);
             const timestampInput = document.getElementById('timestamp').value;
 
-            // Debugging: Überprüfe den Wert des Datumsfeldes
-            console.log("Eingegebener Wert im Datumsfeld: " + timestampInput);
+            // Zeigt den Wert im Datumsfeld an
+            alert("Eingegebener Wert im Datumsfeld: " + timestampInput);
 
-            // Erstelle ein Date-Objekt basierend auf dem Datum im Feld
-            const timestamp = new Date(`${timestampInput}:00.000+01:00`); // Fügt explizit CET (UTC+1) hinzu
+            const timestamp = new Date(timestampInput);
 
-            // Debugging: Überprüfe das erzeugte Date-Objekt
-            console.log("Erzeugtes Date-Objekt: " + timestamp);
-            console.log("ISO-String des Zeitstempels vor Senden: " + timestamp.toISOString());
+            // Zeigt das erzeugte Date-Objekt und den ISO-String an
+            alert("Erzeugtes Date-Objekt: " + timestamp);
+            alert("ISO-String des Zeitstempels vor Senden: " + timestamp.toISOString());
 
             fetch('/save-meter-reading', {
                 method: 'POST',
@@ -159,89 +158,15 @@
                 },
                 body: JSON.stringify({ reading: meterReading, timestamp: timestamp.toISOString() }),
             })
-            .then(response => {
-                console.log("Serverantwort erhalten:", response);
-                return response.text();
-            })
+            .then(response => response.text())
             .then(data => {
-                alert("Serverantwort: " + data); // Serverantwort als Pop-up anzeigen
+                alert("Server-Antwort: " + data);
                 window.location.reload();
             })
             .catch(error => console.error('Fehler:', error));
         });
 
-        function calculateForecast(timestamp) {
-            const startValue = 2790.000;
-            const dailyRates = [6.209, 5.585, 4.657, 3.208, 1.552, 0.802, 0.776, 0.776, 2.005, 3.104, 4.812, 6.209];
-            const date = new Date(timestamp);
-            const month = date.getMonth();
-            const dayOfMonth = date.getDate();
-            const hours = date.getHours();
-
-            const dailyRate = dailyRates[month];
-            const daysElapsed = dayOfMonth - 1;
-            const totalDailyValue = daysElapsed * dailyRate;
-            const hourlyValue = (hours / 24) * dailyRate;
-
-            return (startValue + totalDailyValue + hourlyValue).toFixed(3);
-        }
-
-        function loadDataAndDisplayTable() {
-            fetch('/get-readings')
-                .then(response => response.json())
-                .then(data => {
-                    const lastEntries = data.slice(-10);
-                    const tableBody = document.querySelector('#readingsTable tbody');
-                    tableBody.innerHTML = '';
-
-                    lastEntries.forEach(entry => {
-                        const row = document.createElement('tr');
-                        const dateCell = document.createElement('td');
-                        const readingCell = document.createElement('td');
-                        const forecastCell = document.createElement('td');
-                        const actionCell = document.createElement('td');
-                        const deleteButton = document.createElement('button');
-
-                        const date = new Date(entry.timestamp);
-                        const formattedDate = `${String(date.getDate()).padStart(2, '0')}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getFullYear()).slice(-2)}, ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
-
-                        const forecastValue = calculateForecast(entry.timestamp);
-
-                        dateCell.textContent = formattedDate;
-                        readingCell.textContent = parseFloat(entry.reading).toFixed(3);
-                        forecastCell.textContent = forecastValue;
-
-                        deleteButton.textContent = '✕';
-                        deleteButton.className = 'delete-button';
-                        deleteButton.onclick = () => deleteEntry(entry._id);
-                        actionCell.appendChild(deleteButton);
-
-                        row.appendChild(dateCell);
-                        row.appendChild(readingCell);
-                        row.appendChild(forecastCell);
-                        row.appendChild(actionCell);
-                        tableBody.appendChild(row);
-                    });
-                })
-                .catch(error => console.error('Fehler beim Laden der Daten:', error));
-        }
-
-        function deleteEntry(id) {
-            fetch(`/delete-reading/${id}`, {
-                method: 'DELETE',
-            })
-            .then(response => response.text())
-            .then(() => {
-                window.location.reload();
-            })
-            .catch(error => console.error('Fehler beim Löschen der Daten:', error));
-        }
-
-        // Setze die aktuelle CET-Zeit beim Laden der Seite
-        window.onload = () => {
-            setCurrentDateTime();
-            loadDataAndDisplayTable();
-        };
+        window.onload = setCurrentDateTime;
     </script>
 </body>
 </html>
