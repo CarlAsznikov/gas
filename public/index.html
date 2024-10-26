@@ -145,7 +145,7 @@
     // Zeigt den Wert im Datumsfeld an
     alert("Eingegebener Wert im Datumsfeld: " + timestampInput);
 
-    const timestamp = new Date(timestampInput);
+    const timestamp = new Date(`${timestampInput}:00.000+01:00`); // Fügt explizit CET (UTC+1) hinzu
 
     // Zeigt das erzeugte Date-Objekt und den ISO-String an
     alert("Erzeugtes Date-Objekt: " + timestamp);
