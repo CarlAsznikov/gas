@@ -150,8 +150,142 @@
     </div>
 
     <script>
-        // Script bleibt unverändert; einfach kopieren
-        // Funktionsdefinitionen und Event-Handler hier einfügen
+        const startValues = { 2024: 2795.650 };
+
+        function setCurrentDateTime() {
+            const now = new Date();
+            const localISOString = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString();
+            const dateStr = localISOString.slice(0, 16);
+            document.getElementById('timestamp').value = dateStr;
+        }
+
+        document.getElementById('gasForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const meterReading = parseFloat(document.getElementById('meterReading').value).toFixed(3);
+            const timestampInput = document.getElementById('timestamp').value;
+            const timestamp = new Date(timestampInput);
+
+            fetch('/save-meter-reading', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ reading: meterReading, timestamp: timestamp.toISOString() }),
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log("Serverantwort:", data);
+                window.location.reload();
+            })
+            .catch(error => console.error('Fehler:', error));
+        });
+
+        function calculateForecast(timestamp) {
+            const monthlyGrowth = [
+                192.4758595, 156.3866359, 144.3568947, 96.23792977,
+                48.11896489, 24.05948244, 24.05948244, 24.05948244,
+                60.14870611, 96.23792977, 144.3568947, 192.4758595
+            ];
+            const date = new Date(timestamp);
+            const year = date.getFullYear();
+            const month = date.getMonth();
+            const dayOfMonth = date.getDate();
+            const hours = date.getHours();
+            let total = startValues[year] || startValues[2024];
+
+            for (let m = 0; m < month; m++) {
+                const daysInMonth = new Date(year, m + 1, 0).getDate();
+                total += (monthlyGrowth[m] / daysInMonth) * daysInMonth;
+            }
+
+            const daysInCurrentMonth = new Date(year, month + 1, 0).getDate();
+            const dailyRate = monthlyGrowth[month] / daysInCurrentMonth;
+
+            total += dailyRate * (dayOfMonth - 1);
+            total += dailyRate * (hours / 24);
+
+            return total.toFixed(3);
+        }
+
+        function calculateConsumption(meterReading, year) {
+            const baseValue = startValues[year] || startValues[2024];
+            return (meterReading - baseValue).toFixed(3);
+        }
+
+        function calculateForecastConsumption(forecastValue, year) {
+            const baseValue = startValues[year] || startValues[2024];
+            return (forecastValue - baseValue).toFixed(3);
+        }
+
+        function calculateDeviation(consumption, forecastConsumption) {
+            if (forecastConsumption === 0) return "N/A";
+            const deviation = (consumption / forecastConsumption) - 1;
+            return (deviation >= 0 ? "+" : "") + (deviation * 100).toFixed(2) + "%";
+        }
+
+        function applyDeviationColor(cell, deviation) {
+            const absoluteDeviation = Math.abs(deviation);
+            const intensity = Math.min(absoluteDeviation / 100, 1);
+            cell.style.backgroundColor = deviation > 0 ? `rgba(255, 99, 71, ${intensity})` : `rgba(144, 238, 144, ${intensity})`;
+        }
+
+        function loadDataAndDisplayTable() {
+            fetch('/get-readings')
+                .then(response => response.json())
+                .then(data => {
+                    const lastEntries = data.slice(-10);
+                    const tableBody = document.querySelector('#readingsTable tbody');
+                    tableBody.innerHTML = '';
+
+                    lastEntries.forEach(entry => {
+                        const row = document.createElement('tr');
+                        const dateCell = document.createElement('td');
+                        const readingCell = document.createElement('td');
+                        const consumptionCell = document.createElement('td');
+                        const forecastCell = document.createElement('td');
+                        const forecastConsumptionCell = document.createElement('td');
+                        const deviationCell = document.createElement('td');
+                        const actionCell = document.createElement('td');
+                        const deleteButton = document.createElement('button');
+
+                        const date = new Date(entry.timestamp);
+                        const formattedDate = `${String(date.getDate()).padStart(2, '0')}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getFullYear()).slice(-2)}, ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+                        const year = date.getFullYear();
+
+                        const forecastValue = parseFloat(calculateForecast(entry.timestamp));
+                        const consumptionValue = parseFloat(calculateConsumption(parseFloat(entry.reading), year));
+                        const forecastConsumptionValue = parseFloat(calculateForecastConsumption(forecastValue, year));
+                        const deviationValue = calculateDeviation(consumptionValue, forecastConsumptionValue);
+
+                        dateCell.textContent = formattedDate;
+                        readingCell.textContent = parseFloat(entry.reading).toFixed(3);
+                        consumptionCell.textContent = consumptionValue.toFixed(3);
+                        forecastCell.textContent = forecastValue.toFixed(3);
+                        forecastConsumptionCell.textContent = forecastConsumptionValue.toFixed(3);
+                        deviationCell.textContent = deviationValue;
+
+                        applyDeviationColor(deviationCell, parseFloat(deviationValue));
+
+                        deleteButton.textContent = '✕';
+                        deleteButton.className = 'delete-button';
+                        deleteButton.onclick = () => deleteEntry(entry._id);
+                        actionCell.appendChild(deleteButton);
+
+                        row.appendChild(dateCell);
+                        row.appendChild(readingCell);
+                        row.appendChild(consumptionCell);
+                        row.appendChild(forecastCell);
+                        row.appendChild(forecastConsumptionCell);
+                        row.appendChild(deviationCell);
+                        row.appendChild(actionCell);
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Fehler beim Laden der Daten:', error));
+        }
+
+        window.onload = () => {
+            setCurrentDateTime();
+            loadDataAndDisplayTable();
+        };
     </script>
 </body>
 </html>
