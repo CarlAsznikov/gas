@@ -364,18 +364,34 @@
                     // Spalten sichtbar/unsichtbar machen
                     document.getElementById('showTimeSinceLastReading').addEventListener('change', function() {
                         document.querySelectorAll('.timeSinceLastReading').forEach(cell => cell.style.display = this.checked ? '' : 'none');
+                        document.querySelectorAll('tbody tr').forEach(row => {
+                            const cell = row.children[1];
+                            cell.style.display = this.checked ? '' : 'none';
+                        });
                     });
 
                     document.getElementById('showDaysSinceLastReading').addEventListener('change', function() {
                         document.querySelectorAll('.daysSinceLastReading').forEach(cell => cell.style.display = this.checked ? '' : 'none');
+                        document.querySelectorAll('tbody tr').forEach(row => {
+                            const cell = row.children[2];
+                            cell.style.display = this.checked ? '' : 'none';
+                        });
                     });
 
                     document.getElementById('showConsumptionSinceLastReading').addEventListener('change', function() {
                         document.querySelectorAll('.consumptionSinceLastReading').forEach(cell => cell.style.display = this.checked ? '' : 'none');
+                        document.querySelectorAll('tbody tr').forEach(row => {
+                            const cell = row.children[5];
+                            cell.style.display = this.checked ? '' : 'none';
+                        });
                     });
 
                     document.getElementById('showForecast').addEventListener('change', function() {
                         document.querySelectorAll('.forecast').forEach(cell => cell.style.display = this.checked ? '' : 'none');
+                        document.querySelectorAll('tbody tr').forEach(row => {
+                            const cell = row.children[6];
+                            cell.style.display = this.checked ? '' : 'none';
+                        });
                     });
                 })
                 .catch(error => console.error('Fehler beim Laden der Daten:', error));
