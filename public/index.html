@@ -117,6 +117,7 @@
                 <tr>
                     <th>Datum</th>
                     <th>Zählerstand</th>
+                    <th>Verbrauch</th>
                     <th>Prognose</th>
                     <th>Aktionen</th>
                 </tr>
@@ -128,6 +129,12 @@
     </div>
 
     <script>
+        // Ausgangswerte je Jahr
+        const startValues = {
+            2024: 2795.650,
+            // 2025 und spätere Jahre können hier hinzugefügt werden
+        };
+
         function setCurrentDateTime() {
             const now = new Date();
             const localISOString = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString();
@@ -159,7 +166,6 @@
         });
 
         function calculateForecast(timestamp) {
-            const startValue = 2795.650;
             const monthlyGrowth = [
                 192.4758595, 156.3866359, 144.3568947, 96.23792977,
                 48.11896489, 24.05948244, 24.05948244, 24.05948244,
@@ -168,29 +174,29 @@
 
             const date = new Date(timestamp);
             const year = date.getFullYear();
-            const month = date.getMonth(); // 0 = January, 11 = December
+            const month = date.getMonth();
             const dayOfMonth = date.getDate();
             const hours = date.getHours();
 
-            let total = startValue;
+            let total = startValues[year] || startValues[2024];
 
-            // Add up growth for complete months up to the current month
             for (let m = 0; m < month; m++) {
                 const daysInMonth = new Date(year, m + 1, 0).getDate();
                 total += (monthlyGrowth[m] / daysInMonth) * daysInMonth;
             }
 
-            // Calculate daily growth for the current month
             const daysInCurrentMonth = new Date(year, month + 1, 0).getDate();
             const dailyRate = monthlyGrowth[month] / daysInCurrentMonth;
 
-            // Add growth for complete days in the current month
             total += dailyRate * (dayOfMonth - 1);
-
-            // Add growth for the hours of the current day
             total += dailyRate * (hours / 24);
 
             return total.toFixed(3);
+        }
+
+        function calculateConsumption(meterReading, year) {
+            const baseValue = startValues[year] || startValues[2024];
+            return (meterReading - baseValue).toFixed(3);
         }
 
         function loadDataAndDisplayTable() {
@@ -205,17 +211,21 @@
                         const row = document.createElement('tr');
                         const dateCell = document.createElement('td');
                         const readingCell = document.createElement('td');
+                        const consumptionCell = document.createElement('td');
                         const forecastCell = document.createElement('td');
                         const actionCell = document.createElement('td');
                         const deleteButton = document.createElement('button');
 
                         const date = new Date(entry.timestamp);
                         const formattedDate = `${String(date.getDate()).padStart(2, '0')}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getFullYear()).slice(-2)}, ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+                        const year = date.getFullYear();
 
                         const forecastValue = calculateForecast(entry.timestamp);
+                        const consumptionValue = calculateConsumption(parseFloat(entry.reading), year);
 
                         dateCell.textContent = formattedDate;
                         readingCell.textContent = parseFloat(entry.reading).toFixed(3);
+                        consumptionCell.textContent = consumptionValue;
                         forecastCell.textContent = forecastValue;
 
                         deleteButton.textContent = '✕';
@@ -225,6 +235,7 @@
 
                         row.appendChild(dateCell);
                         row.appendChild(readingCell);
+                        row.appendChild(consumptionCell);
                         row.appendChild(forecastCell);
                         row.appendChild(actionCell);
                         tableBody.appendChild(row);
@@ -244,7 +255,6 @@
             .catch(error => console.error('Fehler beim Löschen der Daten:', error));
         }
 
-        // Setze die aktuelle Zeit beim Laden der Seite
         window.onload = () => {
             setCurrentDateTime();
             loadDataAndDisplayTable();
