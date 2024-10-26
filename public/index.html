@@ -291,13 +291,7 @@
                     const timeDiff = date - lastDate;
                     const hours = Math.floor(timeDiff / (1000 * 60 * 60));
                     const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-
-                    // Stunden auf- oder abrunden
-                    if (minutes >= 30) {
-                        hours += 1; // Aufgerundet
-                    }
-
-                    timeSinceLastReadingCell.textContent = `${hours} Std`;
+                    timeSinceLastReadingCell.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
                 } else {
                     timeSinceLastReadingCell.textContent = '---';
                 }
