@@ -103,10 +103,10 @@
 <body>
     <h1>Gas-Zählerstand Eingabe</h1>
     <form id="gasForm">
-        <label for="meterReading">Zählerstand:</label>
-        <input type="number" id="meterReading" name="meterReading" step="0.001" min="0" required>
         <label for="timestamp">Datum & Uhrzeit:</label>
         <input type="datetime-local" id="timestamp" name="timestamp">
+        <label for="meterReading">Zählerstand:</label>
+        <input type="number" id="meterReading" name="meterReading" step="0.001" min="0" required>
         <button type="submit">Speichern</button>
     </form>
 
@@ -129,10 +129,8 @@
     </div>
 
     <script>
-        // Ausgangswerte je Jahr
         const startValues = {
             2024: 2795.650,
-            // 2025 und spätere Jahre können hier hinzugefügt werden
         };
 
         function setCurrentDateTime() {
