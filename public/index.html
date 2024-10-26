@@ -92,13 +92,18 @@
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    background-color: #ccc; /* Unauffälliges Grau für Hintergrund */
-    color: #666; /* Dunkleres Grau für den Text */
+    background-color: #e0e0e0; /* Helleres Grau für den Hintergrund */
+    color: #9e9e9e; /* Dunkleres Grau für das "X" */
     border: none;
     cursor: pointer;
     font-size: 14px;
     line-height: 0;
-        }
+    transition: background-color 0.3s ease; /* Sanfter Hover-Effekt */
+}
+
+.delete-button:hover {
+    background-color: #d3d3d3; /* Dezenter Hover-Effekt */
+}
     </style>
 </head>
 <body>
