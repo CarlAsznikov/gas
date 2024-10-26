@@ -137,32 +137,34 @@
         }
 
         document.getElementById('gasForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const meterReading = parseFloat(document.getElementById('meterReading').value).toFixed(3);
-            const timestampInput = document.getElementById('timestamp').value;
+    e.preventDefault();
+    
+    const meterReading = parseFloat(document.getElementById('meterReading').value).toFixed(3);
+    const timestampInput = document.getElementById('timestamp').value;
 
-            // Debugging: Logge den eingegebenen Wert aus dem datetime-local Feld
-            console.log("Eingegebener Wert im Datumsfeld:", timestampInput);
+    // Zeigt den Wert im Datumsfeld an
+    alert("Eingegebener Wert im Datumsfeld: " + timestampInput);
 
-            const timestamp = new Date(timestampInput);
+    const timestamp = new Date(timestampInput);
 
-            // Debugging: Logge das erzeugte Date-Objekt und den ISO-String
-            console.log("Erzeugtes Date-Objekt:", timestamp);
-            console.log("ISO-String des Zeitstempels:", timestamp.toISOString());
+    // Zeigt das erzeugte Date-Objekt und den ISO-String an
+    alert("Erzeugtes Date-Objekt: " + timestamp);
+    alert("ISO-String des Zeitstempels: " + timestamp.toISOString());
 
-            fetch('/save-meter-reading', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ reading: meterReading, timestamp: timestamp.toISOString() }),
-            })
-            .then(response => response.text())
-            .then(() => {
-                window.location.reload();
-            })
-            .catch(error => console.error('Fehler:', error));
-        });
+    fetch('/save-meter-reading', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ reading: meterReading, timestamp: timestamp.toISOString() }),
+    })
+    .then(response => response.text())
+    .then(() => {
+        window.location.reload();
+    })
+    .catch(error => console.error('Fehler:', error));
+});
+
 
         function calculateForecast(timestamp) {
             const startValue = 2790.000;
