@@ -147,10 +147,18 @@
     </form>
 
     <div class="checkbox-list">
+        <label><input type="checkbox" id="showDate" checked>Datum</label>
         <label><input type="checkbox" id="showTimeSinceLastReading" checked>Zeit seit letzter Messung</label>
         <label><input type="checkbox" id="showDaysSinceLastReading" checked>Tage seit letzter Messung</label>
+        <label><input type="checkbox" id="showMeterReading" checked>Zählerstand</label>
+        <label><input type="checkbox" id="showConsumption" checked>Verbrauch</label>
         <label><input type="checkbox" id="showConsumptionSinceLastReading" checked>Verbrauch seit letzter Messung</label>
         <label><input type="checkbox" id="showForecast" checked>Prognose</label>
+        <label><input type="checkbox" id="showForecastConsumption" checked>Prognose-Verbrauch</label>
+        <label><input type="checkbox" id="showDeviation" checked>Abweichung %</label>
+        <label><input type="checkbox" id="showAverageDailyConsumption" checked>Ø tägl. Verbrauch seit letzter Messung</label>
+        <label><input type="checkbox" id="showForecastDailyConsumption" checked>Prognostizierter Verbrauch pro Tag</label>
+        <label><input type="checkbox" id="showActions" checked>Aktionen</label>
     </div>
 
     <div class="table-container">
@@ -158,18 +166,18 @@
         <table id="readingsTable">
             <thead>
                 <tr>
-                    <th>Datum</th>
+                    <th class="date">Datum</th>
                     <th class="timeSinceLastReading">Zeit seit letzter Messung</th>
                     <th class="daysSinceLastReading">Tage seit letzter Messung</th>
-                    <th>Zählerstand</th>
-                    <th>Verbrauch</th>
+                    <th class="meterReading">Zählerstand</th>
+                    <th class="consumption">Verbrauch</th>
                     <th class="consumptionSinceLastReading">Verbrauch seit letzter Messung</th>
                     <th class="forecast">Prognose</th>
-                    <th>Prognose-Verbrauch</th>
-                    <th>Abweichung %</th>
-                    <th>Ø tägl. Verbrauch seit letzter Messung</th>
-                    <th>Prognostizierter Verbrauch pro Tag</th>
-                    <th>Aktionen</th>
+                    <th class="forecastConsumption">Prognose-Verbrauch</th>
+                    <th class="deviation">Abweichung %</th>
+                    <th class="averageDailyConsumption">Ø tägl. Verbrauch seit letzter Messung</th>
+                    <th class="forecastDailyConsumption">Prognostizierter Verbrauch pro Tag</th>
+                    <th class="actions">Aktionen</th>
                 </tr>
             </thead>
             <tbody>
@@ -362,6 +370,14 @@
                     });
 
                     // Spalten sichtbar/unsichtbar machen
+                    document.getElementById('showDate').addEventListener('change', function() {
+                        document.querySelectorAll('.date').forEach(cell => cell.style.display = this.checked ? '' : 'none');
+                        document.querySelectorAll('tbody tr').forEach(row => {
+                            const cell = row.children[0];
+                            cell.style.display = this.checked ? '' : 'none';
+                        });
+                    });
+
                     document.getElementById('showTimeSinceLastReading').addEventListener('change', function() {
                         document.querySelectorAll('.timeSinceLastReading').forEach(cell => cell.style.display = this.checked ? '' : 'none');
                         document.querySelectorAll('tbody tr').forEach(row => {
@@ -378,6 +394,22 @@
                         });
                     });
 
+                    document.getElementById('showMeterReading').addEventListener('change', function() {
+                        document.querySelectorAll('.meterReading').forEach(cell => cell.style.display = this.checked ? '' : 'none');
+                        document.querySelectorAll('tbody tr').forEach(row => {
+                            const cell = row.children[3];
+                            cell.style.display = this.checked ? '' : 'none';
+                        });
+                    });
+
+                    document.getElementById('showConsumption').addEventListener('change', function() {
+                        document.querySelectorAll('.consumption').forEach(cell => cell.style.display = this.checked ? '' : 'none');
+                        document.querySelectorAll('tbody tr').forEach(row => {
+                            const cell = row.children[4];
+                            cell.style.display = this.checked ? '' : 'none';
+                        });
+                    });
+
                     document.getElementById('showConsumptionSinceLastReading').addEventListener('change', function() {
                         document.querySelectorAll('.consumptionSinceLastReading').forEach(cell => cell.style.display = this.checked ? '' : 'none');
                         document.querySelectorAll('tbody tr').forEach(row => {
@@ -390,6 +422,46 @@
                         document.querySelectorAll('.forecast').forEach(cell => cell.style.display = this.checked ? '' : 'none');
                         document.querySelectorAll('tbody tr').forEach(row => {
                             const cell = row.children[6];
+                            cell.style.display = this.checked ? '' : 'none';
+                        });
+                    });
+
+                    document.getElementById('showForecastConsumption').addEventListener('change', function() {
+                        document.querySelectorAll('.forecastConsumption').forEach(cell => cell.style.display = this.checked ? '' : 'none');
+                        document.querySelectorAll('tbody tr').forEach(row => {
+                            const cell = row.children[7];
+                            cell.style.display = this.checked ? '' : 'none';
+                        });
+                    });
+
+                    document.getElementById('showDeviation').addEventListener('change', function() {
+                        document.querySelectorAll('.deviation').forEach(cell => cell.style.display = this.checked ? '' : 'none');
+                        document.querySelectorAll('tbody tr').forEach(row => {
+                            const cell = row.children[8];
+                            cell.style.display = this.checked ? '' : 'none';
+                        });
+                    });
+
+                    document.getElementById('showAverageDailyConsumption').addEventListener('change', function() {
+                        document.querySelectorAll('.averageDailyConsumption').forEach(cell => cell.style.display = this.checked ? '' : 'none');
+                        document.querySelectorAll('tbody tr').forEach(row => {
+                            const cell = row.children[9];
+                            cell.style.display = this.checked ? '' : 'none';
+                        });
+                    });
+
+                    document.getElementById('showForecastDailyConsumption').addEventListener('change', function() {
+                        document.querySelectorAll('.forecastDailyConsumption').forEach(cell => cell.style.display = this.checked ? '' : 'none');
+                        document.querySelectorAll('tbody tr').forEach(row => {
+                            const cell = row.children[10];
+                            cell.style.display = this.checked ? '' : 'none';
+                        });
+                    });
+
+                    document.getElementById('showActions').addEventListener('change', function() {
+                        document.querySelectorAll('.actions').forEach(cell => cell.style.display = this.checked ? '' : 'none');
+                        document.querySelectorAll('tbody tr').forEach(row => {
+                            const cell = row.children[11];
                             cell.style.display = this.checked ? '' : 'none';
                         });
                     });
