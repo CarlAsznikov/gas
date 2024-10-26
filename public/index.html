@@ -131,7 +131,6 @@
         // Funktion, um das datetime-local Feld mit der aktuellen CET-Zeit zu füllen
         function setCurrentDateTime() {
             const now = new Date();
-            // Konvertiere die Zeit in die CET-Zeitzone
             now.setMinutes(now.getMinutes() - now.getTimezoneOffset() + 60); // CET ist UTC+1
             const dateStr = now.toISOString().slice(0, 16); // Format: YYYY-MM-DDTHH:MM
             document.getElementById('timestamp').value = dateStr;
@@ -142,8 +141,14 @@
             const meterReading = parseFloat(document.getElementById('meterReading').value).toFixed(3);
             const timestampInput = document.getElementById('timestamp').value;
 
-            // Überprüfe, ob ein Wert im Datumsfeld eingegeben wurde und konvertiere diesen zu einem UTC-Datum
+            // Debugging: Logge den eingegebenen Wert aus dem datetime-local Feld
+            console.log("Eingegebener Wert im Datumsfeld:", timestampInput);
+
             const timestamp = new Date(timestampInput);
+
+            // Debugging: Logge das erzeugte Date-Objekt und den ISO-String
+            console.log("Erzeugtes Date-Objekt:", timestamp);
+            console.log("ISO-String des Zeitstempels:", timestamp.toISOString());
 
             fetch('/save-meter-reading', {
                 method: 'POST',
