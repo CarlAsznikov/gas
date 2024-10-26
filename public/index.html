@@ -211,6 +211,19 @@
             return (deviation >= 0 ? "+" : "") + (deviation * 100).toFixed(2) + "%";
         }
 
+        function applyDeviationColor(cell, deviation) {
+            const absoluteDeviation = Math.abs(deviation);
+            const intensity = Math.min(absoluteDeviation / 100, 1); // Begrenze die Intensität auf 1
+
+            if (deviation > 0) {
+                // Rote Farbskala für positive Werte
+                cell.style.backgroundColor = `rgba(255, 99, 71, ${intensity * 0.5})`; // rgba für transparente Farbe
+            } else {
+                // Grüne Farbskala für negative Werte
+                cell.style.backgroundColor = `rgba(144, 238, 144, ${intensity * 0.5})`; // rgba für transparente Farbe
+            }
+        }
+
         function loadDataAndDisplayTable() {
             fetch('/get-readings')
                 .then(response => response.json())
@@ -245,6 +258,8 @@
                         forecastCell.textContent = forecastValue.toFixed(3);
                         forecastConsumptionCell.textContent = forecastConsumptionValue.toFixed(3);
                         deviationCell.textContent = deviationValue;
+
+                        applyDeviationColor(deviationCell, parseFloat(deviationValue));
 
                         deleteButton.textContent = '✕';
                         deleteButton.className = 'delete-button';
