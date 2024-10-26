@@ -128,10 +128,9 @@
     </div>
 
     <script>
-        // Funktion, um das datetime-local Feld mit der aktuellen CET-Zeit zu füllen
+        // Funktion, um das datetime-local Feld mit der aktuellen Zeit ohne Zeitzonenanpassung zu füllen
         function setCurrentDateTime() {
             const now = new Date();
-            now.setMinutes(now.getMinutes() - now.getTimezoneOffset() + 60); // CET ist UTC+1
             const dateStr = now.toISOString().slice(0, 16); // Format: YYYY-MM-DDTHH:MM
             document.getElementById('timestamp').value = dateStr;
         }
@@ -143,7 +142,7 @@
             const timestampInput = document.getElementById('timestamp').value;
 
             // Erstelle ein Date-Objekt basierend auf dem Datum im Feld
-            const timestamp = new Date(`${timestampInput}:00.000+01:00`); // Fügt explizit CET (UTC+1) hinzu
+            const timestamp = new Date(timestampInput);
 
             fetch('/save-meter-reading', {
                 method: 'POST',
@@ -227,7 +226,7 @@
             .catch(error => console.error('Fehler beim Löschen der Daten:', error));
         }
 
-        // Setze die aktuelle CET-Zeit beim Laden der Seite
+        // Setze die aktuelle Zeit beim Laden der Seite
         window.onload = () => {
             setCurrentDateTime();
             loadDataAndDisplayTable();
