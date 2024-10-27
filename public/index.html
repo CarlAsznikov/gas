@@ -45,7 +45,7 @@
             color: #555;
         }
 
-        input[type="text"], input[type="password"], input[type="number"], input[type="datetime-local"] {
+        input[type="number"], input[type="datetime-local"] {
             padding: 12px;
             font-size: 0.9em;
             width: 100%;
@@ -163,18 +163,7 @@
 </head>
 <body>
     <h1>Gas-Verbrauch</h1>
-
-    <!-- Login-Formular -->
-    <form id="loginForm">
-        <label for="username">Benutzername:</label>
-        <input type="text" id="username" name="username" required>
-        <label for="password">Passwort:</label>
-        <input type="password" id="password" name="password" required>
-        <button type="submit">Anmelden</button>
-    </form>
-
-    <!-- Gas-Formular -->
-    <form id="gasForm" style="display: none;">
+    <form id="gasForm">
         <label for="timestamp">Datum & Uhrzeit:</label>
         <input type="datetime-local" id="timestamp" name="timestamp">
         <label for="meterReading">Zählerstand:</label>
@@ -544,41 +533,9 @@
                 .catch(error => console.error('Fehler beim Laden der Daten:', error));
         }
 
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-
-            fetch('/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.token) {
-                    localStorage.setItem('token', data.token);
-                    document.getElementById('loginForm').style.display = 'none';
-                    document.getElementById('gasForm').style.display = 'block';
-                    loadDataAndDisplayTable();
-                } else {
-                    alert('Anmeldung fehlgeschlagen');
-                }
-            })
-            .catch(error => console.error('Fehler bei der Anmeldung:', error));
-        });
-
         window.onload = () => {
-            const token = localStorage.getItem('token');
-            if (token) {
-                document.getElementById('loginForm').style.display = 'none';
-                document.getElementById('gasForm').style.display = 'block';
-                loadDataAndDisplayTable();
-            } else {
-                document.getElementById('loginForm').style.display = 'block';
-                document.getElementById('gasForm').style.display = 'none';
-            }
             setCurrentDateTime();
+            loadDataAndDisplayTable();
         };
     </script>
 </body>
