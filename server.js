@@ -2,6 +2,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const path = require('path');
+const auth = require('./auth'); // Importiere die Authentifizierungs-Middleware
+require('dotenv').config(); // Lade die Umgebungsvariablen
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -27,7 +30,7 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // API-Endpunkt zum Speichern des Zählerstandes
-app.post('/save-meter-reading', async (req, res) => {
+app.post('/save-meter-reading', auth, async (req, res) => {
     console.log('POST /save-meter-reading aufgerufen');
     console.log('Anfrageinhalt:', req.body);
 
@@ -53,7 +56,7 @@ app.post('/save-meter-reading', async (req, res) => {
 });
 
 // API-Endpunkt zum Abrufen aller Zählerstände
-app.get('/get-readings', async (req, res) => {
+app.get('/get-readings', auth, async (req, res) => {
     try {
         const readings = await MeterReading.find().sort({ timestamp: 1 });
         res.json(readings);
@@ -64,7 +67,7 @@ app.get('/get-readings', async (req, res) => {
 });
 
 // Endpunkt zum Löschen eines Zählerstands anhand der ID
-app.delete('/delete-reading/:id', async (req, res) => {
+app.delete('/delete-reading/:id', auth, async (req, res) => {
     try {
         const id = req.params.id;
         await MeterReading.findByIdAndDelete(id);
