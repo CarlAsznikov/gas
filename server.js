@@ -2,13 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const path = require('path');
-const jwt = require('express-jwt');
-const authRoutes = require('./routes/auth');
-const MeterReading = require('./models/MeterReading');
-
 const app = express();
 const PORT = process.env.PORT || 3000;
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'; // Verwende die Umgebungsvariable oder einen Standardwert
 
 // Verbindung zu MongoDB herstellen
 const mongoURI = process.env.MONGODB_URI;
@@ -21,14 +16,15 @@ mongoose.connect(mongoURI, {
 .then(() => console.log('MongoDB erfolgreich verbunden'))
 .catch(error => console.error('Fehler beim Verbinden mit MongoDB:', error));
 
+const meterReadingSchema = new mongoose.Schema({
+    reading: Number,
+    timestamp: { type: Date, default: Date.now }
+});
+
+const MeterReading = mongoose.model('MeterReading', meterReadingSchema);
+
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
-
-// JWT-Middleware
-app.use(jwt({ secret: JWT_SECRET, algorithms: ['HS256'] }).unless({ path: ['/login', '/register', '/'] }));
-
-// Authentifizierungs-Routen
-app.use('/', authRoutes);
 
 // API-Endpunkt zum Speichern des Zählerstandes
 app.post('/save-meter-reading', async (req, res) => {
@@ -36,7 +32,12 @@ app.post('/save-meter-reading', async (req, res) => {
     console.log('Anfrageinhalt:', req.body);
 
     try {
+        // Verwende den Zeitstempel aus dem Request, oder falls keiner angegeben ist, verwende das aktuelle Datum
         const timestamp = req.body.timestamp ? new Date(req.body.timestamp) : new Date();
+        
+        // Prüfe den Zeitstempel, bevor er gespeichert wird
+        console.log('Zu speichernder Zeitstempel:', timestamp);
+
         const newReading = new MeterReading({
             reading: req.body.reading,
             timestamp: timestamp
