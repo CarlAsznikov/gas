@@ -450,16 +450,17 @@
                         deleteButton.onclick = () => deleteEntry(entry._id);
                         actionCell.appendChild(deleteButton);
 
-                        if (index > 0) {
-                            const lastDate = new Date(data[index - 1].timestamp);
-                            const timeDiff = date - lastDate;
+                        if (index < data.length - 1) { // Überprüfen, ob es einen nächsten Eintrag gibt
+                            const nextEntry = data[index + 1]; // Nächster Eintrag ist der vorherige Wert
+                            const nextDate = new Date(nextEntry.timestamp);
+                            const timeDiff = date - nextDate;
                             const hours = timeDiff / (1000 * 60 * 60);
                             const days = hours / 24;
                             daysSinceLastReadingCell.textContent = days.toFixed(2);
                             hoursSinceLastReadingCell.textContent = hours.toFixed(2);
 
-                            const lastConsumption = parseFloat(calculateConsumption(parseFloat(data[index - 1].reading), year));
-                            const consumptionSinceLast = consumptionValue - lastConsumption;
+                            const nextConsumption = parseFloat(calculateConsumption(parseFloat(nextEntry.reading), year));
+                            const consumptionSinceLast = consumptionValue - nextConsumption;
                             consumptionSinceLastReadingCell.textContent = consumptionSinceLast.toFixed(3);
 
                             const averageDailyConsumption = consumptionSinceLast / days;
