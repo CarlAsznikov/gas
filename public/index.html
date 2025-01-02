@@ -176,14 +176,15 @@
         <label><input type="checkbox" id="showHoursSinceLastReading" checked>Stunden seit letzter Messung</label>
         <label><input type="checkbox" id="showDaysSinceLastReading" checked>Tage seit letzter Messung</label>
         <label><input type="checkbox" id="showMeterReading" checked>Zählerstand</label>
-        <label><input type="checkbox" id="showConsumption" checked>Verbrauch</label>
+        <label><input type="checkbox" id="showConsumption" checked>Jahres-Verbrauch</label>
         <label><input type="checkbox" id="showTotalConsumption" checked>Gesamt-Verbrauch</label>
         <label><input type="checkbox" id="showConsumptionSinceLastReading" checked>Verbrauch seit letzter Messung</label>
-        <label><input type="checkbox" id="showForecast" checked>Prognose</label>
+        <label><input type="checkbox" id="showForecast" checked>Jahres-Prognose</label>
         <label><input type="checkbox" id="showTotalForecast" checked>Gesamt-Prognose</label>
-        <label><input type="checkbox" id="showForecastConsumption" checked>Prognose-Verbrauch</label>
+        <label><input type="checkbox" id="showForecastConsumption" checked>Jahres-Prognose Verbrauch</label>
         <label><input type="checkbox" id="showTotalForecastConsumption" checked>Gesamt-Prognose-Verbrauch</label>
-        <label><input type="checkbox" id="showDeviation" checked>Abweichung %</label>
+        <label><input type="checkbox" id="showDeviation" checked>Jahres-Abweichung %</label>
+        <label><input type="checkbox" id="showTotalDeviation" checked>Gesamt-Abweichung %</label>
         <label><input type="checkbox" id="showAverageDailyConsumption" checked>Ø tägl. Verbrauch seit letzter Messung</label>
         <label><input type="checkbox" id="showForecastDailyConsumption" checked>Prognostizierter Verbrauch pro Tag</label>
         <label><input type="checkbox" id="showActions" checked>Aktionen</label>
@@ -204,14 +205,15 @@
                     <th class="hoursSinceLastReading">Stunden seit letzter Messung</th>
                     <th class="daysSinceLastReading">Tage seit letzter Messung</th>
                     <th class="meterReading">Zählerstand</th>
-                    <th class="consumption">Verbrauch</th>
+                    <th class="consumption">Jahres-Verbrauch</th>
                     <th class="totalConsumption">Gesamt-Verbrauch</th>
                     <th class="consumptionSinceLastReading">Verbrauch seit letzter Messung</th>
-                    <th class="forecast">Prognose</th>
+                    <th class="forecast">Jahres-Prognose</th>
                     <th class="totalForecast">Gesamt-Prognose</th>
-                    <th class="forecastConsumption">Prognose-Verbrauch</th>
+                    <th class="forecastConsumption">Jahres-Prognose Verbrauch</th>
                     <th class="totalForecastConsumption">Gesamt-Prognose-Verbrauch</th>
-                    <th class="deviation">Abweichung %</th>
+                    <th class="deviation">Jahres-Abweichung %</th>
+                    <th class="totalDeviation">Gesamt-Abweichung %</th>
                     <th class="averageDailyConsumption">Ø tägl. Verbrauch seit letzter Messung</th>
                     <th class="forecastDailyConsumption">Prognostizierter Verbrauch pro Tag</th>
                     <th class="actions">Aktionen</th>
@@ -358,6 +360,12 @@
             return (deviation >= 0 ? "+" : "") + (deviation * 100).toFixed(2) + "%";
         }
 
+        function calculateTotalDeviation(totalConsumption, totalForecastConsumption) {
+            if (totalForecastConsumption === 0) return "N/A";
+            const deviation = (totalConsumption / totalForecastConsumption) - 1;
+            return (deviation >= 0 ? "+" : "") + (deviation * 100).toFixed(2) + "%";
+        }
+
         function applyDeviationColor(cell, deviation) {
             const absoluteDeviation = Math.abs(deviation);
             const intensity = Math.min(absoluteDeviation / 100, 1);
@@ -401,6 +409,7 @@
                         const forecastConsumptionCell = document.createElement('td');
                         const totalForecastConsumptionCell = document.createElement('td');
                         const deviationCell = document.createElement('td');
+                        const totalDeviationCell = document.createElement('td');
                         const averageDailyConsumptionCell = document.createElement('td');
                         const forecastDailyConsumptionCell = document.createElement('td');
                         const actionCell = document.createElement('td');
@@ -418,6 +427,7 @@
                         const forecastConsumptionValue = parseFloat(calculateForecastConsumption(forecastValue, year));
                         const totalForecastConsumptionValue = parseFloat(calculateTotalForecastConsumption(totalForecastValue));
                         const deviationValue = calculateDeviation(consumptionValue, forecastConsumptionValue);
+                        const totalDeviationValue = calculateTotalDeviation(totalConsumptionValue, totalForecastConsumptionValue);
 
                         dateCell.textContent = formattedDate;
                         readingCell.textContent = parseFloat(entry.reading).toFixed(3);
@@ -428,8 +438,10 @@
                         forecastConsumptionCell.textContent = forecastConsumptionValue.toFixed(3);
                         totalForecastConsumptionCell.textContent = totalForecastConsumptionValue.toFixed(3);
                         deviationCell.textContent = deviationValue;
+                        totalDeviationCell.textContent = totalDeviationValue;
 
                         applyDeviationColor(deviationCell, parseFloat(deviationValue));
+                        applyDeviationColor(totalDeviationCell, parseFloat(totalDeviationValue));
 
                         deleteButton.textContent = '✕';
                         deleteButton.className = 'delete-button';
@@ -478,6 +490,7 @@
                         row.appendChild(forecastConsumptionCell);
                         row.appendChild(totalForecastConsumptionCell);
                         row.appendChild(deviationCell);
+                        row.appendChild(totalDeviationCell);
                         row.appendChild(averageDailyConsumptionCell);
                         row.appendChild(forecastDailyConsumptionCell);
                         row.appendChild(actionCell);
@@ -593,10 +606,19 @@
                         localStorage.setItem('showDeviation', this.checked);
                     });
 
+                    document.getElementById('showTotalDeviation').addEventListener('change', function() {
+                        document.querySelectorAll('.totalDeviation').forEach(cell => cell.style.display = this.checked ? '' : 'none');
+                        document.querySelectorAll('tbody tr').forEach(row => {
+                            const cell = row.children[12];
+                            cell.style.display = this.checked ? '' : 'none';
+                        });
+                        localStorage.setItem('showTotalDeviation', this.checked);
+                    });
+
                     document.getElementById('showAverageDailyConsumption').addEventListener('change', function() {
                         document.querySelectorAll('.averageDailyConsumption').forEach(cell => cell.style.display = this.checked ? '' : 'none');
                         document.querySelectorAll('tbody tr').forEach(row => {
-                            const cell = row.children[12];
+                            const cell = row.children[13];
                             cell.style.display = this.checked ? '' : 'none';
                         });
                         localStorage.setItem('showAverageDailyConsumption', this.checked);
@@ -605,7 +627,7 @@
                     document.getElementById('showForecastDailyConsumption').addEventListener('change', function() {
                         document.querySelectorAll('.forecastDailyConsumption').forEach(cell => cell.style.display = this.checked ? '' : 'none');
                         document.querySelectorAll('tbody tr').forEach(row => {
-                            const cell = row.children[13];
+                            const cell = row.children[14];
                             cell.style.display = this.checked ? '' : 'none';
                         });
                         localStorage.setItem('showForecastDailyConsumption', this.checked);
@@ -614,7 +636,7 @@
                     document.getElementById('showActions').addEventListener('change', function() {
                         document.querySelectorAll('.actions').forEach(cell => cell.style.display = this.checked ? '' : 'none');
                         document.querySelectorAll('tbody tr').forEach(row => {
-                            const cell = row.children[14];
+                            const cell = row.children[15];
                             cell.style.display = this.checked ? '' : 'none';
                         });
                         localStorage.setItem('showActions', this.checked);
@@ -633,6 +655,7 @@
                     document.getElementById('showForecastConsumption').checked = localStorage.getItem('showForecastConsumption') === 'true';
                     document.getElementById('showTotalForecastConsumption').checked = localStorage.getItem('showTotalForecastConsumption') === 'true';
                     document.getElementById('showDeviation').checked = localStorage.getItem('showDeviation') === 'true';
+                    document.getElementById('showTotalDeviation').checked = localStorage.getItem('showTotalDeviation') === 'true';
                     document.getElementById('showAverageDailyConsumption').checked = localStorage.getItem('showAverageDailyConsumption') === 'true';
                     document.getElementById('showForecastDailyConsumption').checked = localStorage.getItem('showForecastDailyConsumption') === 'true';
                     document.getElementById('showActions').checked = localStorage.getItem('showActions') === 'true';
@@ -650,6 +673,7 @@
                     document.getElementById('showForecastConsumption').dispatchEvent(new Event('change'));
                     document.getElementById('showTotalForecastConsumption').dispatchEvent(new Event('change'));
                     document.getElementById('showDeviation').dispatchEvent(new Event('change'));
+                    document.getElementById('showTotalDeviation').dispatchEvent(new Event('change'));
                     document.getElementById('showAverageDailyConsumption').dispatchEvent(new Event('change'));
                     document.getElementById('showForecastDailyConsumption').dispatchEvent(new Event('change'));
                     document.getElementById('showActions').dispatchEvent(new Event('change'));
