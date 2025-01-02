@@ -301,19 +301,19 @@
             const hours = date.getHours();
             let total = startValues[2024]; // Immer Startwert 2024 verwenden
 
-            // Addiere den Verbrauch für jeden Monat bis zum aktuellen Monat
-            for (let m = 0; m < month; m++) {
-                const daysInMonth = new Date(year, m + 1, 0).getDate();
+            // Addiere den Verbrauch für das gesamte Jahr 2024
+            for (let m = 0; m < 12; m++) {
+                const daysInMonth = new Date(2024, m + 1, 0).getDate();
                 total += (monthlyGrowth[m] / daysInMonth) * daysInMonth;
             }
 
-            // Addiere den Verbrauch für den aktuellen Monat bis zum aktuellen Tag
-            const daysInCurrentMonth = new Date(year, month + 1, 0).getDate();
-            const dailyRate = monthlyGrowth[month] / daysInCurrentMonth;
-            total += dailyRate * (dayOfMonth - 1);
-
-            // Addiere den Verbrauch für die aktuelle Stunde
-            total += dailyRate * (hours / 24);
+            // Addiere den Verbrauch für Januar 2025 bis zum aktuellen Tag
+            if (year === 2025) {
+                const daysInCurrentMonth = new Date(2025, month + 1, 0).getDate();
+                const dailyRate = monthlyGrowth[month] / daysInCurrentMonth;
+                total += dailyRate * (dayOfMonth - 1); // Verbrauch bis zum Vortag
+                total += dailyRate * (hours / 24); // Verbrauch für die aktuelle Stunde
+            }
 
             return total.toFixed(3);
         }
