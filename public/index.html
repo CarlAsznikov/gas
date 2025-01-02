@@ -173,21 +173,21 @@
 
     <div class="checkbox-list">
         <label><input type="checkbox" id="showDate" checked>Datum</label>
-        <label><input type="checkbox" id="showHoursSinceLastReading" checked>Stunden seit letzter Messung</label>
         <label><input type="checkbox" id="showDaysSinceLastReading" checked>Tage seit letzter Messung</label>
-        <label><input type="checkbox" id="showMeterReading" checked>Zählerstand</label>
-        <label><input type="checkbox" id="showConsumption" checked>Jahres-Verbrauch</label>
-        <label><input type="checkbox" id="showTotalConsumption" checked>Gesamt-Verbrauch</label>
+        <label><input type="checkbox" id="showHoursSinceLastReading" checked>Stunden seit letzter Messung</label>
         <label><input type="checkbox" id="showConsumptionSinceLastReading" checked>Verbrauch seit letzter Messung</label>
-        <label><input type="checkbox" id="showForecast" checked>Jahres-Prognose</label>
+        <label><input type="checkbox" id="showMeterReading" checked>Zählerstand</label>
+        <label><input type="checkbox" id="showForecast" checked>Jahresprognose</label>
+        <label><input type="checkbox" id="showConsumption" checked>Jahresverbrauch</label>
+        <label><input type="checkbox" id="showForecastConsumption" checked>Jahres-Prognose-Verbrauch</label>
+        <label><input type="checkbox" id="showDeviation" checked>Jahres-Abweichung</label>
         <label><input type="checkbox" id="showTotalForecast" checked>Gesamt-Prognose</label>
-        <label><input type="checkbox" id="showForecastConsumption" checked>Jahres-Prognose Verbrauch</label>
+        <label><input type="checkbox" id="showTotalConsumption" checked>Gesamt-Verbrauch</label>
         <label><input type="checkbox" id="showTotalForecastConsumption" checked>Gesamt-Prognose-Verbrauch</label>
-        <label><input type="checkbox" id="showDeviation" checked>Jahres-Abweichung %</label>
-        <label><input type="checkbox" id="showTotalDeviation" checked>Gesamt-Abweichung %</label>
-        <label><input type="checkbox" id="showAverageDailyConsumption" checked>Ø tägl. Verbrauch seit letzter Messung</label>
+        <label><input type="checkbox" id="showTotalDeviation" checked>Gesamt-Abweichung</label>
         <label><input type="checkbox" id="showForecastDailyConsumption" checked>Prognostizierter Verbrauch pro Tag</label>
-        <label><input type="checkbox" id="showActions" checked>Aktionen</label>
+        <label><input type="checkbox" id="showAverageDailyConsumption" checked>Täglicher Verbrauch seit letzter Messung</label>
+        <label><input type="checkbox" id="showActions" checked>Aktion</label>
     </div>
 
     <div class="table-container">
@@ -202,21 +202,21 @@
             <thead>
                 <tr>
                     <th class="date">Datum</th>
-                    <th class="hoursSinceLastReading">Stunden seit letzter Messung</th>
                     <th class="daysSinceLastReading">Tage seit letzter Messung</th>
-                    <th class="meterReading">Zählerstand</th>
-                    <th class="consumption">Jahres-Verbrauch</th>
-                    <th class="totalConsumption">Gesamt-Verbrauch</th>
+                    <th class="hoursSinceLastReading">Stunden seit letzter Messung</th>
                     <th class="consumptionSinceLastReading">Verbrauch seit letzter Messung</th>
-                    <th class="forecast">Jahres-Prognose</th>
+                    <th class="meterReading">Zählerstand</th>
+                    <th class="forecast">Jahresprognose</th>
+                    <th class="consumption">Jahresverbrauch</th>
+                    <th class="forecastConsumption">Jahres-Prognose-Verbrauch</th>
+                    <th class="deviation">Jahres-Abweichung</th>
                     <th class="totalForecast">Gesamt-Prognose</th>
-                    <th class="forecastConsumption">Jahres-Prognose Verbrauch</th>
+                    <th class="totalConsumption">Gesamt-Verbrauch</th>
                     <th class="totalForecastConsumption">Gesamt-Prognose-Verbrauch</th>
-                    <th class="deviation">Jahres-Abweichung %</th>
-                    <th class="totalDeviation">Gesamt-Abweichung %</th>
-                    <th class="averageDailyConsumption">Ø tägl. Verbrauch seit letzter Messung</th>
+                    <th class="totalDeviation">Gesamt-Abweichung</th>
                     <th class="forecastDailyConsumption">Prognostizierter Verbrauch pro Tag</th>
-                    <th class="actions">Aktionen</th>
+                    <th class="averageDailyConsumption">Täglicher Verbrauch seit letzter Messung</th>
+                    <th class="actions">Aktion</th>
                 </tr>
             </thead>
             <tbody>
@@ -398,20 +398,20 @@
                     lastEntries.forEach((entry, index) => {
                         const row = document.createElement('tr');
                         const dateCell = document.createElement('td');
-                        const hoursSinceLastReadingCell = document.createElement('td');
                         const daysSinceLastReadingCell = document.createElement('td');
-                        const readingCell = document.createElement('td');
-                        const consumptionCell = document.createElement('td');
-                        const totalConsumptionCell = document.createElement('td');
+                        const hoursSinceLastReadingCell = document.createElement('td');
                         const consumptionSinceLastReadingCell = document.createElement('td');
+                        const readingCell = document.createElement('td');
                         const forecastCell = document.createElement('td');
-                        const totalForecastCell = document.createElement('td');
+                        const consumptionCell = document.createElement('td');
                         const forecastConsumptionCell = document.createElement('td');
-                        const totalForecastConsumptionCell = document.createElement('td');
                         const deviationCell = document.createElement('td');
+                        const totalForecastCell = document.createElement('td');
+                        const totalConsumptionCell = document.createElement('td');
+                        const totalForecastConsumptionCell = document.createElement('td');
                         const totalDeviationCell = document.createElement('td');
-                        const averageDailyConsumptionCell = document.createElement('td');
                         const forecastDailyConsumptionCell = document.createElement('td');
+                        const averageDailyConsumptionCell = document.createElement('td');
                         const actionCell = document.createElement('td');
                         const deleteButton = document.createElement('button');
 
@@ -453,8 +453,8 @@
                             const timeDiff = date - lastDate;
                             const hours = timeDiff / (1000 * 60 * 60);
                             const days = hours / 24;
-                            hoursSinceLastReadingCell.textContent = hours.toFixed(2);
                             daysSinceLastReadingCell.textContent = days.toFixed(2);
+                            hoursSinceLastReadingCell.textContent = hours.toFixed(2);
 
                             const lastConsumption = parseFloat(calculateConsumption(parseFloat(lastEntries[index - 1].reading), year));
                             const consumptionSinceLast = consumptionValue - lastConsumption;
@@ -463,8 +463,8 @@
                             const averageDailyConsumption = consumptionSinceLast / days;
                             averageDailyConsumptionCell.textContent = averageDailyConsumption.toFixed(3);
                         } else {
-                            hoursSinceLastReadingCell.textContent = '---';
                             daysSinceLastReadingCell.textContent = '---';
+                            hoursSinceLastReadingCell.textContent = '---';
                             consumptionSinceLastReadingCell.textContent = '---';
                             averageDailyConsumptionCell.textContent = '---';
                         }
@@ -479,20 +479,20 @@
                         forecastDailyConsumptionCell.textContent = forecastDailyConsumption.toFixed(3);
 
                         row.appendChild(dateCell);
-                        row.appendChild(hoursSinceLastReadingCell);
                         row.appendChild(daysSinceLastReadingCell);
-                        row.appendChild(readingCell);
-                        row.appendChild(consumptionCell);
-                        row.appendChild(totalConsumptionCell);
+                        row.appendChild(hoursSinceLastReadingCell);
                         row.appendChild(consumptionSinceLastReadingCell);
+                        row.appendChild(readingCell);
                         row.appendChild(forecastCell);
-                        row.appendChild(totalForecastCell);
+                        row.appendChild(consumptionCell);
                         row.appendChild(forecastConsumptionCell);
-                        row.appendChild(totalForecastConsumptionCell);
                         row.appendChild(deviationCell);
+                        row.appendChild(totalForecastCell);
+                        row.appendChild(totalConsumptionCell);
+                        row.appendChild(totalForecastConsumptionCell);
                         row.appendChild(totalDeviationCell);
-                        row.appendChild(averageDailyConsumptionCell);
                         row.appendChild(forecastDailyConsumptionCell);
+                        row.appendChild(averageDailyConsumptionCell);
                         row.appendChild(actionCell);
                         tableBody.appendChild(row);
                     });
@@ -507,103 +507,103 @@
                         localStorage.setItem('showDate', this.checked);
                     });
 
-                    document.getElementById('showHoursSinceLastReading').addEventListener('change', function() {
-                        document.querySelectorAll('.hoursSinceLastReading').forEach(cell => cell.style.display = this.checked ? '' : 'none');
-                        document.querySelectorAll('tbody tr').forEach(row => {
-                            const cell = row.children[1];
-                            cell.style.display = this.checked ? '' : 'none';
-                        });
-                        localStorage.setItem('showHoursSinceLastReading', this.checked);
-                    });
-
                     document.getElementById('showDaysSinceLastReading').addEventListener('change', function() {
                         document.querySelectorAll('.daysSinceLastReading').forEach(cell => cell.style.display = this.checked ? '' : 'none');
                         document.querySelectorAll('tbody tr').forEach(row => {
-                            const cell = row.children[2];
+                            const cell = row.children[1];
                             cell.style.display = this.checked ? '' : 'none';
                         });
                         localStorage.setItem('showDaysSinceLastReading', this.checked);
                     });
 
-                    document.getElementById('showMeterReading').addEventListener('change', function() {
-                        document.querySelectorAll('.meterReading').forEach(cell => cell.style.display = this.checked ? '' : 'none');
+                    document.getElementById('showHoursSinceLastReading').addEventListener('change', function() {
+                        document.querySelectorAll('.hoursSinceLastReading').forEach(cell => cell.style.display = this.checked ? '' : 'none');
                         document.querySelectorAll('tbody tr').forEach(row => {
-                            const cell = row.children[3];
+                            const cell = row.children[2];
                             cell.style.display = this.checked ? '' : 'none';
                         });
-                        localStorage.setItem('showMeterReading', this.checked);
-                    });
-
-                    document.getElementById('showConsumption').addEventListener('change', function() {
-                        document.querySelectorAll('.consumption').forEach(cell => cell.style.display = this.checked ? '' : 'none');
-                        document.querySelectorAll('tbody tr').forEach(row => {
-                            const cell = row.children[4];
-                            cell.style.display = this.checked ? '' : 'none';
-                        });
-                        localStorage.setItem('showConsumption', this.checked);
-                    });
-
-                    document.getElementById('showTotalConsumption').addEventListener('change', function() {
-                        document.querySelectorAll('.totalConsumption').forEach(cell => cell.style.display = this.checked ? '' : 'none');
-                        document.querySelectorAll('tbody tr').forEach(row => {
-                            const cell = row.children[5];
-                            cell.style.display = this.checked ? '' : 'none';
-                        });
-                        localStorage.setItem('showTotalConsumption', this.checked);
+                        localStorage.setItem('showHoursSinceLastReading', this.checked);
                     });
 
                     document.getElementById('showConsumptionSinceLastReading').addEventListener('change', function() {
                         document.querySelectorAll('.consumptionSinceLastReading').forEach(cell => cell.style.display = this.checked ? '' : 'none');
                         document.querySelectorAll('tbody tr').forEach(row => {
-                            const cell = row.children[6];
+                            const cell = row.children[3];
                             cell.style.display = this.checked ? '' : 'none';
                         });
                         localStorage.setItem('showConsumptionSinceLastReading', this.checked);
                     });
 
+                    document.getElementById('showMeterReading').addEventListener('change', function() {
+                        document.querySelectorAll('.meterReading').forEach(cell => cell.style.display = this.checked ? '' : 'none');
+                        document.querySelectorAll('tbody tr').forEach(row => {
+                            const cell = row.children[4];
+                            cell.style.display = this.checked ? '' : 'none';
+                        });
+                        localStorage.setItem('showMeterReading', this.checked);
+                    });
+
                     document.getElementById('showForecast').addEventListener('change', function() {
                         document.querySelectorAll('.forecast').forEach(cell => cell.style.display = this.checked ? '' : 'none');
                         document.querySelectorAll('tbody tr').forEach(row => {
-                            const cell = row.children[7];
+                            const cell = row.children[5];
                             cell.style.display = this.checked ? '' : 'none';
                         });
                         localStorage.setItem('showForecast', this.checked);
                     });
 
-                    document.getElementById('showTotalForecast').addEventListener('change', function() {
-                        document.querySelectorAll('.totalForecast').forEach(cell => cell.style.display = this.checked ? '' : 'none');
+                    document.getElementById('showConsumption').addEventListener('change', function() {
+                        document.querySelectorAll('.consumption').forEach(cell => cell.style.display = this.checked ? '' : 'none');
                         document.querySelectorAll('tbody tr').forEach(row => {
-                            const cell = row.children[8];
+                            const cell = row.children[6];
                             cell.style.display = this.checked ? '' : 'none';
                         });
-                        localStorage.setItem('showTotalForecast', this.checked);
+                        localStorage.setItem('showConsumption', this.checked);
                     });
 
                     document.getElementById('showForecastConsumption').addEventListener('change', function() {
                         document.querySelectorAll('.forecastConsumption').forEach(cell => cell.style.display = this.checked ? '' : 'none');
                         document.querySelectorAll('tbody tr').forEach(row => {
-                            const cell = row.children[9];
+                            const cell = row.children[7];
                             cell.style.display = this.checked ? '' : 'none';
                         });
                         localStorage.setItem('showForecastConsumption', this.checked);
                     });
 
-                    document.getElementById('showTotalForecastConsumption').addEventListener('change', function() {
-                        document.querySelectorAll('.totalForecastConsumption').forEach(cell => cell.style.display = this.checked ? '' : 'none');
+                    document.getElementById('showDeviation').addEventListener('change', function() {
+                        document.querySelectorAll('.deviation').forEach(cell => cell.style.display = this.checked ? '' : 'none');
+                        document.querySelectorAll('tbody tr').forEach(row => {
+                            const cell = row.children[8];
+                            cell.style.display = this.checked ? '' : 'none';
+                        });
+                        localStorage.setItem('showDeviation', this.checked);
+                    });
+
+                    document.getElementById('showTotalForecast').addEventListener('change', function() {
+                        document.querySelectorAll('.totalForecast').forEach(cell => cell.style.display = this.checked ? '' : 'none');
+                        document.querySelectorAll('tbody tr').forEach(row => {
+                            const cell = row.children[9];
+                            cell.style.display = this.checked ? '' : 'none';
+                        });
+                        localStorage.setItem('showTotalForecast', this.checked);
+                    });
+
+                    document.getElementById('showTotalConsumption').addEventListener('change', function() {
+                        document.querySelectorAll('.totalConsumption').forEach(cell => cell.style.display = this.checked ? '' : 'none');
                         document.querySelectorAll('tbody tr').forEach(row => {
                             const cell = row.children[10];
                             cell.style.display = this.checked ? '' : 'none';
                         });
-                        localStorage.setItem('showTotalForecastConsumption', this.checked);
+                        localStorage.setItem('showTotalConsumption', this.checked);
                     });
 
-                    document.getElementById('showDeviation').addEventListener('change', function() {
-                        document.querySelectorAll('.deviation').forEach(cell => cell.style.display = this.checked ? '' : 'none');
+                    document.getElementById('showTotalForecastConsumption').addEventListener('change', function() {
+                        document.querySelectorAll('.totalForecastConsumption').forEach(cell => cell.style.display = this.checked ? '' : 'none');
                         document.querySelectorAll('tbody tr').forEach(row => {
                             const cell = row.children[11];
                             cell.style.display = this.checked ? '' : 'none';
                         });
-                        localStorage.setItem('showDeviation', this.checked);
+                        localStorage.setItem('showTotalForecastConsumption', this.checked);
                     });
 
                     document.getElementById('showTotalDeviation').addEventListener('change', function() {
@@ -615,22 +615,22 @@
                         localStorage.setItem('showTotalDeviation', this.checked);
                     });
 
-                    document.getElementById('showAverageDailyConsumption').addEventListener('change', function() {
-                        document.querySelectorAll('.averageDailyConsumption').forEach(cell => cell.style.display = this.checked ? '' : 'none');
+                    document.getElementById('showForecastDailyConsumption').addEventListener('change', function() {
+                        document.querySelectorAll('.forecastDailyConsumption').forEach(cell => cell.style.display = this.checked ? '' : 'none');
                         document.querySelectorAll('tbody tr').forEach(row => {
                             const cell = row.children[13];
                             cell.style.display = this.checked ? '' : 'none';
                         });
-                        localStorage.setItem('showAverageDailyConsumption', this.checked);
+                        localStorage.setItem('showForecastDailyConsumption', this.checked);
                     });
 
-                    document.getElementById('showForecastDailyConsumption').addEventListener('change', function() {
-                        document.querySelectorAll('.forecastDailyConsumption').forEach(cell => cell.style.display = this.checked ? '' : 'none');
+                    document.getElementById('showAverageDailyConsumption').addEventListener('change', function() {
+                        document.querySelectorAll('.averageDailyConsumption').forEach(cell => cell.style.display = this.checked ? '' : 'none');
                         document.querySelectorAll('tbody tr').forEach(row => {
                             const cell = row.children[14];
                             cell.style.display = this.checked ? '' : 'none';
                         });
-                        localStorage.setItem('showForecastDailyConsumption', this.checked);
+                        localStorage.setItem('showAverageDailyConsumption', this.checked);
                     });
 
                     document.getElementById('showActions').addEventListener('change', function() {
@@ -644,38 +644,38 @@
 
                     // Wiederherstellen der Checkbox-Zustände
                     document.getElementById('showDate').checked = localStorage.getItem('showDate') === 'true';
-                    document.getElementById('showHoursSinceLastReading').checked = localStorage.getItem('showHoursSinceLastReading') === 'true';
                     document.getElementById('showDaysSinceLastReading').checked = localStorage.getItem('showDaysSinceLastReading') === 'true';
-                    document.getElementById('showMeterReading').checked = localStorage.getItem('showMeterReading') === 'true';
-                    document.getElementById('showConsumption').checked = localStorage.getItem('showConsumption') === 'true';
-                    document.getElementById('showTotalConsumption').checked = localStorage.getItem('showTotalConsumption') === 'true';
+                    document.getElementById('showHoursSinceLastReading').checked = localStorage.getItem('showHoursSinceLastReading') === 'true';
                     document.getElementById('showConsumptionSinceLastReading').checked = localStorage.getItem('showConsumptionSinceLastReading') === 'true';
+                    document.getElementById('showMeterReading').checked = localStorage.getItem('showMeterReading') === 'true';
                     document.getElementById('showForecast').checked = localStorage.getItem('showForecast') === 'true';
-                    document.getElementById('showTotalForecast').checked = localStorage.getItem('showTotalForecast') === 'true';
+                    document.getElementById('showConsumption').checked = localStorage.getItem('showConsumption') === 'true';
                     document.getElementById('showForecastConsumption').checked = localStorage.getItem('showForecastConsumption') === 'true';
-                    document.getElementById('showTotalForecastConsumption').checked = localStorage.getItem('showTotalForecastConsumption') === 'true';
                     document.getElementById('showDeviation').checked = localStorage.getItem('showDeviation') === 'true';
+                    document.getElementById('showTotalForecast').checked = localStorage.getItem('showTotalForecast') === 'true';
+                    document.getElementById('showTotalConsumption').checked = localStorage.getItem('showTotalConsumption') === 'true';
+                    document.getElementById('showTotalForecastConsumption').checked = localStorage.getItem('showTotalForecastConsumption') === 'true';
                     document.getElementById('showTotalDeviation').checked = localStorage.getItem('showTotalDeviation') === 'true';
-                    document.getElementById('showAverageDailyConsumption').checked = localStorage.getItem('showAverageDailyConsumption') === 'true';
                     document.getElementById('showForecastDailyConsumption').checked = localStorage.getItem('showForecastDailyConsumption') === 'true';
+                    document.getElementById('showAverageDailyConsumption').checked = localStorage.getItem('showAverageDailyConsumption') === 'true';
                     document.getElementById('showActions').checked = localStorage.getItem('showActions') === 'true';
 
                     // Aktualisieren der Spalten basierend auf den gespeicherten Zuständen
                     document.getElementById('showDate').dispatchEvent(new Event('change'));
-                    document.getElementById('showHoursSinceLastReading').dispatchEvent(new Event('change'));
                     document.getElementById('showDaysSinceLastReading').dispatchEvent(new Event('change'));
-                    document.getElementById('showMeterReading').dispatchEvent(new Event('change'));
-                    document.getElementById('showConsumption').dispatchEvent(new Event('change'));
-                    document.getElementById('showTotalConsumption').dispatchEvent(new Event('change'));
+                    document.getElementById('showHoursSinceLastReading').dispatchEvent(new Event('change'));
                     document.getElementById('showConsumptionSinceLastReading').dispatchEvent(new Event('change'));
+                    document.getElementById('showMeterReading').dispatchEvent(new Event('change'));
                     document.getElementById('showForecast').dispatchEvent(new Event('change'));
-                    document.getElementById('showTotalForecast').dispatchEvent(new Event('change'));
+                    document.getElementById('showConsumption').dispatchEvent(new Event('change'));
                     document.getElementById('showForecastConsumption').dispatchEvent(new Event('change'));
-                    document.getElementById('showTotalForecastConsumption').dispatchEvent(new Event('change'));
                     document.getElementById('showDeviation').dispatchEvent(new Event('change'));
+                    document.getElementById('showTotalForecast').dispatchEvent(new Event('change'));
+                    document.getElementById('showTotalConsumption').dispatchEvent(new Event('change'));
+                    document.getElementById('showTotalForecastConsumption').dispatchEvent(new Event('change'));
                     document.getElementById('showTotalDeviation').dispatchEvent(new Event('change'));
-                    document.getElementById('showAverageDailyConsumption').dispatchEvent(new Event('change'));
                     document.getElementById('showForecastDailyConsumption').dispatchEvent(new Event('change'));
+                    document.getElementById('showAverageDailyConsumption').dispatchEvent(new Event('change'));
                     document.getElementById('showActions').dispatchEvent(new Event('change'));
 
                     // Filter nach Jahr anwenden
