@@ -45,7 +45,7 @@
             color: #555;
         }
 
-        input[type="number"], input[type="datetime-local"] {
+        input[type="number"], input[type="datetime-local"], select {
             padding: 12px;
             font-size: 0.9em;
             width: 100%;
@@ -188,6 +188,12 @@
 
     <div class="table-container">
         <h2>Zählerstand-Verlauf</h2>
+        <label for="yearFilter">Jahr auswählen:</label>
+        <select id="yearFilter">
+            <option value="all">Alle Jahre</option>
+            <option value="2024">2024</option>
+            <option value="2025">2025</option>
+        </select>
         <table id="readingsTable">
             <thead>
                 <tr>
@@ -212,7 +218,7 @@
     </div>
 
     <script>
-        const startValues = { 2024: 2795.650 };
+        const startValues = { 2024: 2795.650, 2025: 3904.107 };
 
         function setCurrentDateTime() {
             const now = new Date();
@@ -298,6 +304,21 @@
             const absoluteDeviation = Math.abs(deviation);
             const intensity = Math.min(absoluteDeviation / 100, 1);
             cell.style.backgroundColor = deviation > 0 ? `rgba(255, 99, 71, ${intensity})` : `rgba(144, 238, 144, ${intensity})`;
+        }
+
+        function filterTableByYear(year) {
+            const rows = document.querySelectorAll('#readingsTable tbody tr');
+            rows.forEach(row => {
+                const dateCell = row.querySelector('.date');
+                if (dateCell) {
+                    const rowYear = dateCell.textContent.split('.')[2].split(',')[0];
+                    if (year === 'all' || rowYear === year) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                }
+            });
         }
 
         function loadDataAndDisplayTable() {
@@ -529,6 +550,11 @@
                     document.getElementById('showAverageDailyConsumption').dispatchEvent(new Event('change'));
                     document.getElementById('showForecastDailyConsumption').dispatchEvent(new Event('change'));
                     document.getElementById('showActions').dispatchEvent(new Event('change'));
+
+                    // Filter nach Jahr anwenden
+                    document.getElementById('yearFilter').addEventListener('change', function() {
+                        filterTableByYear(this.value);
+                    });
                 })
                 .catch(error => console.error('Fehler beim Laden der Daten:', error));
         }
